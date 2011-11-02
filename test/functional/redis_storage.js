@@ -5,9 +5,11 @@ var vows = require('vows')
 , _ = require('underscore')._
 , path = require('path')
 , redis = require('redis');
+
 var client = redis.createClient();
 
 var models = require('clay');
+models.set_primary_storage(new models.storage.RedisMechanism(client));
 
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.field("name", kind.string);
@@ -24,35 +26,37 @@ var User = models.declare("User", function(it, kind){
 });
 
 function clear_redis(callback) {
-    console.log('x');
-    return function() {
-        var topic = this;
+    var topic = this;
 
-        client.keys('clay*', function (err, keys){
+    client.keys('clay*', function (err, keys){
+        if (keys.length > 0) {
             _.each(keys, function(key){
                 client.del(key, function(){
                     if (keys.last == key) {
-                        callback(topic);
+                        callback.apply(topic);
                     }
                 });
             });
-        });
-    }
+        } else {
+            callback.apply(topic);
+        }
+    });
 }
 
 vows.describe('Redis Storage Mechanism').addBatch({
     'by calling *store.persist(instance, callback)*': {
-        topic: clear_redis(function(topic){
-            var zach = new User({
-                name: 'Zach Smith',
-                email: 'zach@yipit.com',
-                password: 'cheezNwine'
+        topic: function() {
+            var topic = this;
+
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                zach.save(topic.callback);
             });
-            console.log(topic);
-            zach.save(function(err, key, zach, store, connection){
-                topic.callback(err, key, zach, store, connection);
-            });
-        }),
+        },
         'it increments the index': function(err, key, zach, store, connection){
             assert.deepEqual('clay:User:id:1', key);
         }
