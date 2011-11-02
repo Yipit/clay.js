@@ -1,0 +1,10 @@
+.monitor
+node_modules/
+public/stylesheets/style.css
+test.sh
+.sandbox
+.DS_Store
+.test
+npm-debug.log
+.#*
+*#

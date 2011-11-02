@@ -1,0 +1,39 @@
+{
+    "name": "clay"
+  , "version": "1.0.0"
+  , "description": "A Node.js Active Record with a charming declaration and simple usage. Supports Redis as backend but can be easily extended"
+  , "keywords": ["Active Record", "Redis", "database"]
+  , "homepage": "http://github.com/Yipit/clay"
+  , "bugs": "http://github.com/Yipit/clay/issues"
+  , "main": "./index.js"
+  , "dependencies": {
+      "underscore": ">= 1.1.7"
+    , "redis": ">= 0.6.7"
+  }
+  , "devDependencies": {
+      "vows": "0.5.12"
+    , "wrench": ">= 1.3.1"
+    , "colors": ">= 0.5.1"
+  }
+  , "maintainers": [
+      {
+          "name": "Gabriel Falcão"
+        , "email": "gabriel@yipit.com"
+        , "web": "http://github.com/gabrielfalcao"
+      },
+      {
+          "name": "Yipit"
+        , "email": "coders@yipit.com"
+        , "web": "http://github.com/Yipit"
+      }
+  ]
+  , "licenses": [
+      {
+          "type": "MIT"
+        , "url": "http://www.opensource.org/licenses/mit-license.php"
+      }
+  ]
+  , "engines": {
+      "node": ">= 0.4.92"
+  }
+}
