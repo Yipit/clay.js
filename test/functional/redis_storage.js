@@ -21,6 +21,7 @@ var User = models.declare("User", function(it, kind){
             "Hello, my name is ", this.name, ", it's nice to meet you"
         ].join('');
     });
+    it.has.index('email');
     it.is_stored_with(redis_storage);
 });
 
@@ -115,6 +116,33 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 error: '',
                 output: 'Worked!'
             });
+        },
+        'it is indexed': {
+            topic : function(){
+                var topic = this;
+                var u1 = new User({
+                    name: 'Adam Nelson',
+                    email: 'coders@yipit.com',
+                    password: 'got you a gift'
+                });
+                var u2 = new User({
+                    name: 'Steve Pulec',
+                    email: 'coders@yipit.com',
+                    password: 'xpath master'
+                });
+                u1.save(function(e, key1){
+                    u2.save(function(e, key2){
+                        client.smembers("clay:User:indexes:email:coders@yipit.com", function(err, pks){
+                            topic.callback(err, pks, key1, key2);
+                        });
+                    });
+                });
+
+            },
+            'in a list': function(e, pks, key1, key2){
+                pks.should.eql([key1, key2]);
+            }
         }
+
     }
 }).export(module);
