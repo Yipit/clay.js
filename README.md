@@ -25,7 +25,7 @@ the example below was extracted from
 [emerald](http://github.com/Yipit/emerald)'s codebase
 
 ```javascript
-
+var redis = require('redis').createConnection();
 var models = require('clay');
 
 var User = models.declare("User", function(it, kind){
@@ -47,10 +47,21 @@ var Build = models.declare("Build", function(it, kind){
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("repository_address", kind.string);
+    it.has.field("build_command", kind.string);
     it.validates.uniquenessOf("name");
     it.has.index("repository_address");
     it.has.many("builds", Build, "instruction");
     it.has.one("owner", User, "created_instructions");
+});
+
+var lettuce_instructions = new BuildInstruction({
+    name: 'Lettuce Unit Tests',
+    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+    build_command: 'make unit'
+});
+
+lettuce_instructions.save(function(err, pk, model_instance, storage, redis_connection){
+    assert.equal(pk, 'clay:BuildInstruction:id:1')
 });
 ```
 
