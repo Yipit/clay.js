@@ -10,8 +10,8 @@ var run_tests = function(kind){
 
     process.env['NODE_PATH'] = process.env['NODE_PATH'] + ':' + __dirname + '/../';
     var test = child_process.exec(command, {env: process.env}, function(error, stdout, stderr){
-        console.log(stderr.toString());
         console.log(stdout.toString());
+        console.log(stderr.toString());
     });
     test.on('exit', function(code, signal){
         process.on('exit', function () {

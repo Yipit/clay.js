@@ -24,7 +24,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
 var vows = require('vows')
-, assert = require('assert')
+, should = require('should')
 , crypto = require('crypto')
 , _ = require('underscore')._;
 
@@ -69,57 +69,57 @@ vows.describe('A Model').addBatch({
             })
         },
         'the indexes are place': function(Person) {
-            assert.deepEqual(
+            should.deepEqual(
                 Person._meta.indexes,
                 ['username', 'email_address']
             );
         },
         'can be created from': function(Person) {
-            assert.deepEqual(
+            should.deepEqual(
                 Person._meta.indexes,
                 ['username', 'email_address']
             );
         },
         'the declared field names are available': function(Person) {
-            assert.deepEqual(
+            should.deepEqual(
                 Person._meta.field.names,
                 ['username', 'email_address', 'zipcode', 'password']
             );
         },
         'obligatory fields are stored': function(Person) {
-            assert.ok(_.contains(
+            should.ok(_.contains(
                 Person._meta.required_fields,
                 'username',
                 'the "username" field should be considered obligatory'
             ));
-            assert.ok(_.contains(
+            should.ok(_.contains(
                 Person._meta.required_fields,
                 'email_address',
                 'the "email_address" field should be considered obligatory'
             ));
         },
         'unique fields are stored': function(Person) {
-            assert.ok(_.contains(
+            should.ok(_.contains(
                 Person._meta.unique_fields,
                 'username',
                 'the "username" field should be considered unique'
             ));
-            assert.ok(_.contains(
+            should.ok(_.contains(
                 Person._meta.required_fields,
                 'email_address',
                 'the "email_address" field should be considered obligatory'
             ));
         },
         'the declared field specs are available too': function(Person) {
-            assert.equal(
+            should.equal(
                 Person._meta.field.definitions.username,
                 models.FieldKinds.alphanumeric
             );
-            assert.equal(
+            should.equal(
                 Person._meta.field.definitions.email_address,
                 models.FieldKinds.email
             );
-            assert.equal(
+            should.equal(
                 Person._meta.field.definitions.zipcode,
                 models.FieldKinds.numeric
             );
@@ -133,10 +133,10 @@ vows.describe('A Model').addBatch({
             })
 
             var p = Person.from_json_string(raw);
-            assert.equal(p.username, 'gabrielfalcao');
-            assert.equal(p.email_address, 'gabriel@lettuce.it');
-            assert.equal(p.zipcode, '10019');
-            assert.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p.username, 'gabrielfalcao');
+            should.equal(p.email_address, 'gabriel@lettuce.it');
+            should.equal(p.zipcode, '10019');
+            should.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
         },
         'can be created from a JSON buffer': function(Person) {
             var buf = new Buffer(JSON.stringify({
@@ -147,10 +147,10 @@ vows.describe('A Model').addBatch({
             }))
 
             var p = Person.from_json_buffer(buf);
-            assert.equal(p.username, 'gabrielfalcao');
-            assert.equal(p.email_address, 'gabriel@lettuce.it');
-            assert.equal(p.zipcode, '10019');
-            assert.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p.username, 'gabrielfalcao');
+            should.equal(p.email_address, 'gabriel@lettuce.it');
+            should.equal(p.zipcode, '10019');
+            should.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
         },
         'can be created from a JSON buffer/string seamlessly': function(Person) {
             var raw = JSON.stringify({
@@ -164,15 +164,15 @@ vows.describe('A Model').addBatch({
             var p1 = Person.from_json(buf);
             var p2 = Person.from_json(raw);
 
-            assert.equal(p1.username, 'gabrielfalcao');
-            assert.equal(p1.email_address, 'gabriel@lettuce.it');
-            assert.equal(p1.zipcode, '10019');
-            assert.equal(p1.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p1.username, 'gabrielfalcao');
+            should.equal(p1.email_address, 'gabriel@lettuce.it');
+            should.equal(p1.zipcode, '10019');
+            should.equal(p1.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
 
-            assert.equal(p2.username, 'gabrielfalcao');
-            assert.equal(p2.email_address, 'gabriel@lettuce.it');
-            assert.equal(p2.zipcode, '10019');
-            assert.equal(p2.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p2.username, 'gabrielfalcao');
+            should.equal(p2.email_address, 'gabriel@lettuce.it');
+            should.equal(p2.zipcode, '10019');
+            should.equal(p2.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
         },
 
         'after creating a functional instance of it': {
@@ -188,7 +188,7 @@ vows.describe('A Model').addBatch({
                 });
             },
             'the model is available through instance.__model__': function (e, gabrielfalcao, Person){
-                assert.deepEqual(gabrielfalcao.__model__, Person);
+                should.deepEqual(gabrielfalcao.__model__, Person);
             },
 
             'the password is hashed': function (e, gabrielfalcao, Person){
@@ -196,8 +196,8 @@ vows.describe('A Model').addBatch({
                 sha1.update('gabrielfalcao|sha1-emerald|gabriel@lettuce.it|sha1-emerald|123')
 
                 var expected_hash = sha1.digest('hex');
-                assert.equal(expected_hash, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
-                assert.equal(gabrielfalcao.password, expected_hash);
+                should.equal(expected_hash, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(gabrielfalcao.password, expected_hash);
             },
             'the frickin hash really works, this tests set it to something else and works': function (e, gabrielfalcao){
                 var sha1 = crypto.createHash('sha1');
@@ -205,37 +205,37 @@ vows.describe('A Model').addBatch({
 
                 var expected_hash = sha1.digest('hex');
 
-                assert.equal(expected_hash, 'f7d713c86afc8e76abf003416a83947070ae41eb');
-                assert.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(expected_hash, 'f7d713c86afc8e76abf003416a83947070ae41eb');
+                should.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
 
                 gabrielfalcao.password = 'somethingelse';
-                assert.equal(gabrielfalcao.password, expected_hash);
+                should.equal(gabrielfalcao.password, expected_hash);
             },
             'resetting the password also works': function (e, gabrielfalcao){
                 gabrielfalcao.password = '123';
-                assert.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
             },
             'the getter works': function(e, gabrielfalcao) {
-                assert.equal(gabrielfalcao.email, 'gabriel@lettuce.it');
+                should.equal(gabrielfalcao.email, 'gabriel@lettuce.it');
             },
             'the setter also works': function(e, gabrielfalcao) {
-                assert.equal(gabrielfalcao.username, 'gabrielfalcao');
+                should.equal(gabrielfalcao.username, 'gabrielfalcao');
 
                 gabrielfalcao.email = 'gabriel@lettuce.it';
 
-                assert.equal(gabrielfalcao.username, 'gabriel');
-                assert.equal(gabrielfalcao.email_address, 'gabriel@lettuce.it');
+                should.equal(gabrielfalcao.username, 'gabriel');
+                should.equal(gabrielfalcao.email_address, 'gabriel@lettuce.it');
             },
             'instance methods': function(e, gabrielfalcao) {
                 gabrielfalcao.username = 'ohhyeah'
 
-                assert.equal(
+                should.equal(
                     gabrielfalcao.tweet('that is cool, bro'),
                     '@ohhyeah that is cool, bro'
                 );
             },
             'class methods': function(e, gabrielfalcao, Person) {
-                assert.equal(
+                should.equal(
                     Person.foo(),
                     'fooooooooooooooooooooo'
                 );
@@ -253,8 +253,8 @@ vows.describe('A Model').addBatch({
                 });
             },
             'it should fail': function (e, gabrielfalcao, Person){
-                assert.ok(e !== null, 'but did not!!!!!')
-                assert.equal(e.message, 'the "username" field is required');
+                should.ok(e !== null, 'but did not!!!!!')
+                should.equal(e.message, 'the "username" field is required');
             }
         }
     }
