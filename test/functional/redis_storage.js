@@ -171,5 +171,52 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 pks.should.eql([key1, key2]);
             }
         }
+    },
+    'store.persist([instance1, instance2], callback) stores an array of instances': {
+        topic: function() {
+            var topic = this;
+
+            clear_redis(function(){
+                var nitya = new User({
+                    name: 'Nitya Oberoi',
+                    email: 'nitya@yipit.com',
+                    password: 'hackoutloud'
+                });
+                var henri = new User({
+                    name: 'Henri Xie',
+                    email: 'henri@yipit.com',
+                    password: 'switzerland'
+                });
+                var nitya_and_henri = [nitya, henri];
+
+                redis_storage.persist(nitya_and_henri, function(err, key, zach, store, connection){
+                    var items = [];
+                    _.each(nitya_and_henri, function(item){
+                        client.hgetall("clay:User:id:" + item.__id__, function(err, data){
+                            items.push(data);
+                            if (items.length == 2) {
+                                topic.callback(null, items);
+                            }
+                        });
+                    });
+                });
+            });
+        },
+        'it is stored properly': function(err, items){
+            items.should.eql([
+                {
+                    __id__: '2',
+                    name: 'Nitya Oberoi',
+                    email: 'nitya@yipit.com',
+                    password: '6a3245c020e827d762dd7dc55a1196a5c3fda2e1'
+                },
+                {
+                    __id__: '3',
+                    name: 'Henri Xie',
+                    email: 'henri@yipit.com',
+                    password: '9921510a6f322a268fdec1ebd8efd2e067fb1d29'
+                }
+            ]);
+        }
     }
 }).export(module);
