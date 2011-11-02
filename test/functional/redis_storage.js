@@ -142,7 +142,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
                 });
             },
-            'in a list': function(e, key1, key2) {
+            'so that it keeps the key': function(e, key1, key2) {
                 key1.should.eql(key2);
             }
         },
@@ -161,14 +161,14 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
                 u1.save(function(e, key1){
                     u2.save(function(e, key2){
-                        client.smembers("clay:User:indexes:email:coders@yipit.com", function(err, pks){
+                        client.zrange("clay:User:indexes:email:coders@yipit.com", 0, -1, function(err, pks){
                             topic.callback(err, pks, key1, key2);
                         });
                     });
                 });
             },
-            'in a list': function(e, pks, key1, key2) {
-                pks.should.eql([key2, key1]);
+            'in a sorted set': function(e, pks, key1, key2) {
+                pks.should.eql([key1, key2]);
             }
         }
     }
