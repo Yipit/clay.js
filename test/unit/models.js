@@ -66,7 +66,6 @@ vows.describe('A Model').addBatch({
                 it.has.class_method('foo', function(){
                     return 'fooooooooooooooooooooo';
                 });
-
             })
         },
         'the indexes are place': function(Person) {

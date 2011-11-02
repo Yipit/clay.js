@@ -6,11 +6,11 @@ var testKinds = ['unit', 'functional'];
 
 var run_command = function(command){
     var failed = false;
-    process.env['NODE_MODULES'] = process.env['NODE_MODULES'] + ':' + __dirname + '../';
-
+    process.env['NODE_PATH'] = process.env['NODE_PATH'] + ':' + __dirname + '/../';
     child_process.exec(command, {env: process.env}, function(error, stdout, stderr){
-            console.log(stdout.toString());
-            console.log(stderr.toString());
+        console.log(stdout.toString());
+        console.log(stderr.toString());
+
         if (error) {
             failed = true;
             console.log("process exited with status:".bold.red, (""+error.code).bold);
@@ -36,4 +36,3 @@ testKinds.forEach(function (val, index, array){
     desc('run only ' + val + ' tests');
     task(val, [], function () { runTest(val)});
 });
-
