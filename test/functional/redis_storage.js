@@ -80,11 +80,17 @@ vows.describe('Redis Storage Mechanism').addBatch({
         'it increments the index': function(err, key, zach, store, connection, data){
             key.should.equal('clay:User:id:1')
             data.should.eql({
+                __id__: '1',
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
                 password: 'b65c43168bf3621f4abeb857ba76ab028246df34'
             });
-            zach.__data__.should.eql(data);
+            zach.__data__.should.eql({
+                __id__: 1,
+                name: 'Zach Smith',
+                email: 'zach@yipit.com',
+                password: 'b65c43168bf3621f4abeb857ba76ab028246df34'
+            });
         }
     },
     'by calling *instance.save(callback)*': {
@@ -104,18 +110,41 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
             });
         },
-        'it increments the index': function(err, key, b1, store, connection, data){
+        'it increments the index': function(err, key, b1, store, connection, data) {
             key.should.equal('clay:Build:id:1')
             data.should.eql({
+                __id__: '1',
                 status: '0',
                 error: '',
                 output: 'Worked!'
             });
+
             b1.__data__.should.eql({
+                __id__: 1,
                 status: 0,
                 error: '',
                 output: 'Worked!'
             });
+        },
+        'changing an already saved instance just update the values': {
+            topic : function(){
+                var topic = this;
+                var u3 = new User({
+                    name: 'Ben',
+                    email: 'ben@yipit.com',
+                    password: 'this is ben'
+                });
+                u3.save(function(e, key1){
+                    u3.name = 'Ben Plesser'
+                    u3.save(function(e, key2){
+                        topic.callback(null, key1, key2);
+                    });
+
+                });
+            },
+            'in a list': function(e, key1, key2) {
+                key1.should.eql(key2);
+            }
         },
         'it is indexed': {
             topic : function(){
@@ -137,12 +166,10 @@ vows.describe('Redis Storage Mechanism').addBatch({
                         });
                     });
                 });
-
             },
-            'in a list': function(e, pks, key1, key2){
-                pks.should.eql([key1, key2]);
+            'in a list': function(e, pks, key1, key2) {
+                pks.should.eql([key2, key1]);
             }
         }
-
     }
 }).export(module);
