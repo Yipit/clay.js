@@ -20,10 +20,6 @@ var run_tests = function(kind){
     });
 }
 
-var runTest = function(kind) {
-
-}
-
 desc('run all tests');
 task('default', [], function () {
     run_tests('{unit,functional}')
