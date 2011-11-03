@@ -34,6 +34,9 @@ vows.describe('Monkey-patches/Additions to the native prototypes').addBatch({
     'String.methodify': function() {
         assert.equal("Call Gabriel Falcão".methodify(), "call_gabriel_falcao");
     },
+    'String.render': function() {
+        assert.equal("Gabriel {surname}".render({surname: 'Falcão'}), "Gabriel Falcão");
+    },
     'Array.prototype.first always return the first element': function() {
         assert.equal(["aaa", "b"].first, "aaa");
     },
