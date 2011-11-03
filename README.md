@@ -83,6 +83,7 @@ shorthand for the regexp `/^[a-zA-z-0-9]+$/`
 var Foo = models.declare('Foo', function(it, kind){
     it.has.field('example', kind.alphanumeric);
 });
+```
 
 ### numeric
 
