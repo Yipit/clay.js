@@ -54,6 +54,8 @@ var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.one("owner", User, "created_instructions");
 });
 
+```
+
 ### anatomy
 
 Clay provides syntactic sugar function calls that will help you
