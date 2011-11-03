@@ -34,8 +34,8 @@ var Build = models.declare("Build", function(it, kind){
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("repository_address", kind.string);
-    it.validates.uniquenessOf("name");
-    it.has.index("repository_address");
+    it.has.field("build_command", kind.string);
+
     it.has.many("builds", Build, "instruction");
     it.has.one("owner", User, "created_instructions");
     it.is_stored_with(redis_storage);
@@ -337,6 +337,79 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
             found[0].name.should.equal('Steve Pulec');
             found[1].name.should.equal('Zach Smith');
+        }
+    }
+}).addBatch({
+    'find by non-indexed field through storage mechanism': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit'
+                });
+                var lettuce_functional = new BuildInstruction({
+                    name: "Lettuce Functional Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make functional'
+                });
+
+                redis_storage.persist([lettuce_unit, lettuce_functional], function(){
+
+                    redis_storage.find_by_regex_match(BuildInstruction, 'name', /unit/i, function(err, found) {
+                        topic.callback(err, found);
+                    });
+
+                });
+            });
+        },
+        'found 2 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(2)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(BuildInstruction);
+            found[1].should.be.an.instanceof(BuildInstruction);
+
+            found[0].name.should.equal('Lettuce Unit Tests');
+            found[1].name.should.equal('Lettuce Functional Tests');
+        }
+    }
+}).addBatch({
+    'find by non-indexed field through model': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit'
+                });
+                var lettuce_functional = new BuildInstruction({
+                    name: "Lettuce Functional Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make functional'
+                });
+
+                redis_storage.persist([lettuce_unit, lettuce_functional], function(){
+                    BuildInstruction.find_by_name(/unit/i, function(err, found) {
+                        topic.callback(err, found);
+                    });
+
+                });
+            });
+        },
+        'found 2 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(2)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(BuildInstruction);
+            found[1].should.be.an.instanceof(BuildInstruction);
+
+            found[0].name.should.equal('Lettuce Unit Tests');
+            found[1].name.should.equal('Lettuce Functional Tests');
         }
     }
 
