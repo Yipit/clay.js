@@ -269,4 +269,32 @@ vows.describe('Redis Storage Mechanism').addBatch({
             should.equal(instance.name, 'Zach Smith')
         }
     }
+}).addBatch({
+    'find by indexed field': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                var steve = new User({
+                    name: 'Steve Pulec',
+                    email: 'steve@yipit.com',
+                    password: 'steeeeve'
+                });
+
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
+                    redis_storage.find_by_regex_match(User, 'email', /.*[@]yipit.com$/, function(err, found) {
+                        topic.callback(err, found);
+                    });
+                });
+            });
+        },
+        'found 2 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(2)
+        }
+    }
 }).export(module);
