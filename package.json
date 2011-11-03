@@ -3,8 +3,8 @@
   , "version": "1.0.0"
   , "description": "A Node.js Active Record with a charming declaration and simple usage. Supports Redis as backend but can be easily extended"
   , "keywords": ["Active Record", "Redis", "database"]
-  , "homepage": "http://github.com/Yipit/clay"
-  , "bugs": "http://github.com/Yipit/clay/issues"
+  , "homepage": "http://github.com/Yipit/clay.js"
+  , "bugs": "http://github.com/Yipit/clay.js/issues"
   , "main": "./index.js"
   , "dependencies": {
       "underscore": ">= 1.1.7"
