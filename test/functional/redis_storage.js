@@ -217,6 +217,56 @@ vows.describe('Redis Storage Mechanism').addBatch({
                     password: '9921510a6f322a268fdec1ebd8efd2e067fb1d29'
                 }
             ]);
+        },
+    }
+}).addBatch({
+    'find by id through storage mechanism': {
+        topic: function(store, folder){
+            var topic = this;
+            redis_storage.find_by_id(User, 1, function(err, instance){
+                topic.callback(err, instance);
+            });
+        },
+        'instance.__id__ is in place': function(e, instance){
+            instance.__id__.should.equal('1');
+        },
+        'instance.__model__ is in place': function(e, instance){
+            instance.__model__.should.eql(User);
+        },
+        'instance.__data__ is also in place': function(e, instance){
+            should.deepEqual(instance.__data__, {
+                name: 'Zach Smith',
+                email: 'zach@yipit.com',
+                password: '0edcc2073e944ebb4a3a447d9bb6ebf043155ec1'
+            });
+        },
+        'the data is also working through the getter': function(e, instance){
+            should.equal(instance.name, 'Zach Smith')
+        }
+    }
+}).addBatch({
+    'find by id through class method on model': {
+        topic: function(store, folder){
+            var topic = this;
+            User.find_by_id(1, function(err, instance){
+                topic.callback(err, instance);
+            });
+        },
+        'instance.__id__ is in place': function(e, instance){
+            instance.__id__.should.equal('1');
+        },
+        'instance.__model__ is in place': function(e, instance){
+            instance.__model__.should.eql(User);
+        },
+        'instance.__data__ is also in place': function(e, instance){
+            should.deepEqual(instance.__data__, {
+                name: 'Zach Smith',
+                email: 'zach@yipit.com',
+                password: '0edcc2073e944ebb4a3a447d9bb6ebf043155ec1'
+            });
+        },
+        'the data is also working through the getter': function(e, instance){
+            should.equal(instance.name, 'Zach Smith')
         }
     }
 }).export(module);
