@@ -54,6 +54,24 @@ var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.one("owner", User, "created_instructions");
 });
 
+### anatomy
+
+Clay provides syntactic sugar function calls that will help you
+declare models in a very classy, fashion and expressive way.
+
+It is possible through the callback passed to the `models.declare`
+call, and it has the arguments `it` and `kind`. These two will help
+you out to declare your model.
+
+```javascript
+/* BIG-O TO DO */
+```
+
+### saving instances
+
+```javascript
+var assert = require('assert');
+
 var lettuce_instructions = new BuildInstruction({
     name: 'Lettuce Unit Tests',
     repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
@@ -61,9 +79,21 @@ var lettuce_instructions = new BuildInstruction({
 });
 
 lettuce_instructions.save(function(err, pk, model_instance, storage, redis_connection){
-    assert.equal(pk, 'clay:BuildInstruction:id:1')
+    assert.equal(pk, 'clay:BuildInstruction:id:1');
 });
 ```
+
+### finding by id
+
+BuildInstruction.find_by_id(1, function(e, found){
+    assert.equal(found.name, 'Lettuce Unit Tests');
+    assert.equal(found.repository_address, 'git://github.com/gabrielfalcao/lettuce.git');
+
+    assert.equal(
+       "Will now build: {name}".render(found),
+       "Will now build: Lettuce Unit Tests"
+    );
+});
 
 # License
 
