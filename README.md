@@ -56,7 +56,7 @@ var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
 
 ```
 
-### anatomy
+# anatomy
 
 Clay provides syntactic sugar function calls that will help you
 declare models in a very classy, fashion and expressive way.
@@ -65,11 +65,112 @@ It is possible through the callback passed to the `models.declare`
 call, and it has the arguments `it` and `kind`. These two will help
 you out to declare your model.
 
+## field types
+
+Clay's field kinds are no more than just functions responsible to
+transform and validate data.
+
+You can implement your own field kind, or use the builtin kinds. They come with valitation out of the box:
+
+### alphanumeric
+
+shorthand for the regexp `/^[a-zA-z-0-9]+$/`
+
+`USAGE:`
+
+
 ```javascript
-/* BIG-O TO DO */
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('example', kind.alphanumeric);
+});
+
+### numeric
+
+shorthand for the regexp `/^[0-9]+$/`
+also returns an integer through `parseInt`
+
+`USAGE:`
+
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('example', kind.numeric);
+});
 ```
 
-### saving instances
+### email
+
+shorthand for the regexp `/^\w+[@]\w+[.]\w{2,}$/`
+
+`USAGE:`
+
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('example', kind.email);
+});
+```
+
+### string
+
+any string of any size, although it's trimmed
+
+`USAGE:`
+
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('example', kind.string);
+});
+```
+
+### slug
+
+any string of any size, will me returned as a slug,
+for example the input `Hello World` turns into `hello-world`
+
+`USAGE:`
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('example', kind.slug);
+});
+```
+
+### hashOf
+
+Now this is cool :)
+
+Let's say you want to have a password kind of field.
+
+One of the ways to implement such thing is by concatenating with other
+field value(s) and then hashed with md5 or sha1, right?
+
+That is what the field kind `hashOf` does for you. Just declare on it
+which fields must be ued in the concatenation, that will be done
+automatically for you.
+
+You can take a look
+[on its unit tests](https://github.com/Yipit/clay.js/blob/master/test/unit/fields.js#L127)
+to see how it works precisely, but here is an example:
+
+```javascript
+var u1 = new User({
+    name: "John Doe",
+    email: "example@email.com",
+    password: '123'
+});
+
+assert.equal(u1.password, "f8543ecd4084527d7bc443f272a38c6390bbb7d6")
+```
+
+the password was already converted from `123` to
+`f8543ecd4084527d7bc443f272a38c6390bbb7d6`, which is the `sha1` sum of
+the string:
+
+`John Doe|sha1-emerald|example@email.com|sha1-emerald|123`
+
+## saving instances
 
 ```javascript
 var assert = require('assert');
@@ -85,8 +186,9 @@ lettuce_instructions.save(function(err, pk, model_instance, storage, redis_conne
 });
 ```
 
-### finding by id
+## finding by id
 
+```javascript
 BuildInstruction.find_by_id(1, function(e, found){
     assert.equal(found.name, 'Lettuce Unit Tests');
     assert.equal(found.repository_address, 'git://github.com/gabrielfalcao/lettuce.git');
@@ -96,6 +198,45 @@ BuildInstruction.find_by_id(1, function(e, found){
        "Will now build: Lettuce Unit Tests"
     );
 });
+```
+
+## finding by any field
+
+Clay attempts to be really simple to use, and for the sake of this
+fact there is a lot of *magic* here.
+
+When you declare any model with Clay, you have special class-methods
+available right away.
+
+In order to search by any declared field, all you need to do is call
+`YourModel.find_by_fieldname`, where `YourModel` is the return of
+`models.declare()` and `fieldname` is the name of any fields you have
+declared. All of them will be available.
+
+It takes just 2 parameters: the `RegExp` that will be used to match
+against values and a callback.
+
+The callback, takes 2 parameters: an error and an array with instances
+of models.
+
+## example
+
+```javascript
+
+var adam = new User({
+    name: "Adam Nelson",
+    email: "adam@yipit.com",
+    password: '123'
+});
+adam.save(function(e, pk, instance){
+    User.find_by_email(/yipit.com$/, function(e, found){
+        assert.equal(found.length, 1);
+
+        assert.equal(found.first.name, 'Adam Nelson');
+        assert.equal(found.first.email, 'adam@yipit.com');
+    });
+
+```
 
 # License
 
