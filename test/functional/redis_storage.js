@@ -270,7 +270,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
         }
     }
 }).addBatch({
-    'find by indexed field': {
+    'find by indexed field through storage mechanism': {
         topic: function(){
             var topic = this;
             clear_redis(function(){
@@ -295,6 +295,49 @@ vows.describe('Redis Storage Mechanism').addBatch({
         'found 2 items': function(e, found){
             should.exist(found);
             found.should.have.length(2)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(User);
+            found[1].should.be.an.instanceof(User);
+
+            found[0].name.should.equal('Steve Pulec');
+            found[1].name.should.equal('Zach Smith');
         }
     }
+}).addBatch({
+    'find by indexed field through model': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                var steve = new User({
+                    name: 'Steve Pulec',
+                    email: 'steve@yipit.com',
+                    password: 'steeeeve'
+                });
+
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
+                    User.find_by_email(/.*[@]yipit.com$/, function(err, found) {
+                        topic.callback(err, found);
+                    });
+                });
+            });
+        },
+        'found 2 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(2)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(User);
+            found[1].should.be.an.instanceof(User);
+
+            found[0].name.should.equal('Steve Pulec');
+            found[1].name.should.equal('Zach Smith');
+        }
+    }
+
 }).export(module);
