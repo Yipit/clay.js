@@ -24,7 +24,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
 var vows = require('vows')
-, assert = require('assert')
+, should = require('should')
 , crypto = require('crypto')
 , _ = require('underscore')._;
 
@@ -45,15 +45,122 @@ var Bar = models.declare("Bar", function(it, kind){
     });
 });
 
-vows.describe('Models').addBatch({
+vows.describe('Model issues').addBatch({
     'can be declared sequentially': {
         topic: {
             'Foo': Foo,
             'Bar': Bar,
         },
         'and keep their spec sandboxed': function(MODELS){
-            assert.deepEqual(MODELS.Foo._meta.name, 'Foo');
-            assert.deepEqual(MODELS.Bar._meta.name, 'Bar');
+            MODELS.Foo._meta.name.should.equal('Foo');
+            MODELS.Bar._meta.name.should.equal('Bar');
+        }
+    },
+    'it complains when declared fields have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.field('some field', kind.string);
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a field with a bad name: "some field". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared indexes have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.index('some field', kind.string);
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies an index with a bad name: "some field". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared methods have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.method('some method', function(){});
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a method with a bad name: "some method". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared class methods have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.class_method('some class method', function(){});
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a class method with a bad name: "some class method". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared class methods have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.class_method('some class method', function(){});
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a class method with a bad name: "some class method". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared one to many relationships have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.one('some rel', function(){});
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a relationship with a bad name: "some rel". In those cases use just numbers, letters and underscore');
+        }
+    },
+    'it complains when declared many to one relationships have bad names': function(){
+        var our_hope_away = function(){
+            var Wicked = models.declare("Wicked", function(it, kind){
+                it.has.many('some rel', function(){});
+            });
+        }
+
+        should.throws(our_hope_away, models.FieldValidationError);
+
+        try {
+            our_hope_away();
+        } catch (e) {
+            e.message.should.equal('The declaration of the model "Wicked" specifies a relationship with a bad name: "some rel". In those cases use just numbers, letters and underscore');
         }
     }
+
+
 }).export(module);
