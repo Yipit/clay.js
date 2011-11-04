@@ -412,5 +412,35 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[1].name.should.equal('Lettuce Functional Tests');
         }
     }
+}).addBatch({
+    'saving models with one-to-many relationships': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var gabrielfalcao = new User({
+                    name: 'Gabriel Falcão',
+                    email: 'gabriel@yipit.com',
+                    password: '123'
+                });
 
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit',
+                    owner: gabrielfalcao
+                });
+
+                lettuce_unit.save(function(e, instance){
+                    client.get('clay:BuildInstruction:id:' + instance.__id__ + ':owner', function(e, value){
+                        topic.callback(e, value, instance, gabrielfalcao);
+                    });
+
+                });
+            });
+        },
+        'it gets stored in redis as a simple key-value': function(e, value, instruction, user){
+            should.exist(value);
+            value.should.equal('clay:User:id:' + user.__id__);
+        }
+    }
 }).export(module);
