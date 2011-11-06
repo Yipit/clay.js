@@ -430,11 +430,12 @@ vows.describe('Redis Storage Mechanism').addBatch({
                     owner: gabrielfalcao
                 });
 
-                lettuce_unit.save(function(e, instance){
-                    client.get('clay:BuildInstruction:id:' + instance.__id__ + ':owner', function(e, value){
-                        topic.callback(e, value, instance, gabrielfalcao);
+                gabrielfalcao.save(function(e1, gabrielfalcao){
+                    lettuce_unit.save(function(e2, lettuce_unit){
+                        client.get('clay:BuildInstruction:id:' + lettuce_unit.__id__ + ':owner', function(e, value){
+                            topic.callback(e, value, lettuce_unit, gabrielfalcao);
+                        });
                     });
-
                 });
             });
         },
