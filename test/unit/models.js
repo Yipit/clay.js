@@ -193,7 +193,7 @@ vows.describe('A Model').addBatch({
 
             'the password is hashed': function (e, gabrielfalcao, Person){
                 var sha1 = crypto.createHash('sha1');
-                sha1.update('gabrielfalcao|sha1-emerald|gabriel@lettuce.it|sha1-emerald|123')
+                sha1.update('gabrielfalcao|sha1-clay|gabriel@lettuce.it|sha1-clay|123')
 
                 var expected_hash = sha1.digest('hex');
                 should.equal(expected_hash, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
@@ -201,7 +201,7 @@ vows.describe('A Model').addBatch({
             },
             'the frickin hash really works, this tests set it to something else and works': function (e, gabrielfalcao){
                 var sha1 = crypto.createHash('sha1');
-                sha1.update('gabrielfalcao|sha1-emerald|gabriel@lettuce.it|sha1-emerald|somethingelse')
+                sha1.update('gabrielfalcao|sha1-clay|gabriel@lettuce.it|sha1-clay|somethingelse')
 
                 var expected_hash = sha1.digest('hex');
 

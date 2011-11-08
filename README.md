@@ -23,8 +23,8 @@ npm install clay
 
 ## declaration
 
-the example below was extracted from
-[emerald](http://github.com/Yipit/emerald)'s codebase
+Let's go by example:
+
 
 ```javascript
 var redis = require('redis').createConnection();
@@ -172,7 +172,7 @@ the password was already converted from `123` to
 `f8543ecd4084527d7bc443f272a38c6390bbb7d6`, which is the `sha1` sum of
 the string:
 
-`John Doe|sha1-emerald|example@email.com|sha1-emerald|123`
+`John Doe|sha1-clay|example@email.com|sha1-clay|123`
 
 ## saving instances
 
@@ -437,6 +437,7 @@ adam.save(function(e, pk, instance){
     });
 });
 ```
+
 # Hacking / Contributing
 
 

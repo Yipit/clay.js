@@ -138,7 +138,7 @@ vows.describe('Model fields').addBatch({
 
                 assert.equal(
                     stub._meta.get_key(['name', 'id'], 'some-other-value'),
-                    'gabriel|sha1-emerald|42|sha1-emerald|some-other-value'
+                    'gabriel|sha1-clay|42|sha1-clay|some-other-value'
                 )
             }
         }
