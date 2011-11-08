@@ -224,7 +224,7 @@ gabrielfalcao.save(function(e, gabrielfalcao_pk){
     b1.save(function(e, b1_pk){
         b2.save(function(e, b2_pk){
             lettuce_unit.save(function(e4, lettuce_unit_pk){
-                // from now one, whenever you fetch the
+                // from now on, whenever you fetch the
                 // BuildInstruction 'Lettuce Unit Tests', the related objects
                 // will be automatically fetched from the database
             });
