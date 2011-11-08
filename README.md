@@ -339,13 +339,6 @@ var john = new Person();
 john.name = "John Doe";
 assert.equal(john.first_name, "John");
 assert.equal(john.last_name, "John");
-```
-
-would produce the output
-
-```bash
-Hello, I am John Doe
-```
 
 ## saving instances and its relationships
 
