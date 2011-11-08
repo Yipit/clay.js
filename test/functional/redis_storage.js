@@ -29,6 +29,7 @@ var Build = models.declare("Build", function(it, kind){
     it.has.field("status", kind.numeric);
     it.has.field("error", kind.string);
     it.has.field("output", kind.string);
+    it.has.one("author", User, "builds");
     it.is_stored_with(redis_storage);
 });
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
@@ -300,8 +301,8 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-            found[0].name.should.equal('Steve Pulec');
-            found[1].name.should.equal('Zach Smith');
+            found[0].name.should.equal('Zach Smith');
+            found[1].name.should.equal('Steve Pulec');
         }
     }
 }).addBatch({
@@ -335,8 +336,9 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-            found[0].name.should.equal('Steve Pulec');
-            found[1].name.should.equal('Zach Smith');
+
+            found[0].name.should.equal('Zach Smith');
+            found[1].name.should.equal('Steve Pulec');
         }
     }
 }).addBatch({
@@ -432,7 +434,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
                 gabrielfalcao.save(function(e1, gabrielfalcao){
                     lettuce_unit.save(function(e2, lettuce_unit){
-                        client.get('clay:BuildInstruction:id:' + lettuce_unit.__id__ + ':owner', function(e, value){
+                        client.hget(lettuce_unit, 'owner', function(e, value){
                             topic.callback(e, value, lettuce_unit, gabrielfalcao);
                         });
                     });
@@ -440,8 +442,64 @@ vows.describe('Redis Storage Mechanism').addBatch({
             });
         },
         'it gets stored in redis as a simple key-value': function(e, value, instruction, user){
+            instruction.should.equal('clay:BuildInstruction:id:1');
+            user.should.equal('clay:User:id:1');
+
             should.exist(value);
-            value.should.equal('clay:User:id:' + user.__id__);
+            value.should.equal(user);
+        }
+    }
+}).addBatch({
+    'saving models with many-to-one relationships': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function() {
+                var gabrielfalcao = new Build({
+                    name: 'Gabriel Falcão',
+                    email: 'gabriel@yipit.com',
+                    password: '123'
+                });
+                var b1 = new Build({
+                    status: 0,
+                    error: '',
+                    output: 'Worked!',
+                    author: gabrielfalcao
+                });
+                var b2 = new Build({
+                    status: 32,
+                    error: 'Failed!',
+                    output: 'OOps',
+                    author: gabrielfalcao
+                });
+
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit',
+                    owner: gabrielfalcao,
+                    builds: [b1, b2]
+                });
+
+                gabrielfalcao.save(function(e1, gabrielfalcao){
+                    b1.save(function(e2, b1){
+                        b2.save(function(e3, b2){
+                            lettuce_unit.save(function(e4, lettuce_unit){
+                                client.zrevrange(lettuce_unit + ':builds', 0, -1, function(e5, items){
+                                    topic.callback(e5, items, lettuce_unit, b1, b2, gabrielfalcao);
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        },
+        'it gets stored in redis as a simple key-value': function(e, items, instruction, b1, b2, user){
+            should.exist(items);
+
+            items.should.have.length(2)
+
+            items[0].should.equal(b2)
+            items[1].should.equal(b1)
         }
     }
 }).export(module);
