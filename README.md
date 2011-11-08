@@ -303,12 +303,12 @@ npm install -g jake
 
 ## 5. run the tests
 
-**PS.:** *you need to have redis running in order to make the functional tests running*
-
 ```bash
 jake unit
 jake functional
 ```
+
+**PS.:** *you need to have redis running in order to make the functional tests running*
 
 ## 6. send the pull request
 
