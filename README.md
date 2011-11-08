@@ -1,3 +1,5 @@
+![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
+
 # clay.js
 > version 1.0.0
 
@@ -187,6 +189,49 @@ lettuce_instructions.save(function(err, pk, model_instance, storage, redis_conne
 });
 ```
 
+## saving instances and its relationships
+
+```javascript
+var assert = require('assert');
+
+              var gabrielfalcao = new Build({
+                    name: 'Gabriel Falcão',
+                    email: 'gabriel@yipit.com',
+                    password: '123'
+                });
+                var b1 = new Build({
+                    status: 0,
+                    error: '',
+                    output: 'Worked!',
+                    author: gabrielfalcao
+                });
+                var b2 = new Build({
+                    status: 32,
+                    error: 'Failed!',
+                    output: 'OOps',
+                    author: gabrielfalcao
+                });
+
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit',
+                    owner: gabrielfalcao,
+                    builds: [b1, b2]
+                });
+
+                gabrielfalcao.save(function(e, gabrielfalcao_pk){
+                    b1.save(function(e, b1_pk){
+                        b2.save(function(e, b2_pk){
+                            lettuce_unit.save(function(e4, lettuce_unit_pk){
+                                // from now one, whenever you fetch the BuildInstruction 'Lettuce Unit Tests', the related objects will be automatically fetched from the database
+                            });
+                        });
+                    });
+                });
+
+```
+
 ## finding by id
 
 ```javascript
@@ -238,6 +283,19 @@ adam.save(function(e, pk, instance){
     });
 
 ```
+# Contributing
+
+1. fork and clone the project
+2. install the dependencies above
+3. run the tests with make:
+    > make unit functional integration doctest
+4. hack at will
+5. commit, push etc
+6. send a pull request
+
+## WRITE TESTS!
+
+![your lack of tests if disturbing the force](http://farm3.static.flickr.com/2248/2282734669_a7f431e660_o.jpg)
 
 # License
 
