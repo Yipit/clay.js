@@ -45,6 +45,7 @@ var Build = models.declare("Build", function(it, kind){
     it.has.field("status", kind.numeric);
     it.has.field("error", kind.string);
     it.has.field("output", kind.string);
+    it.has.one("author", User, "builds");
 });
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.field("name", kind.string);
@@ -187,6 +188,160 @@ var lettuce_instructions = new BuildInstruction({
 lettuce_instructions.save(function(err, pk, model_instance, storage, redis_connection){
     assert.equal(pk, 'clay:BuildInstruction:id:1');
 });
+```
+## relationships
+
+Clay ["kind of support"](http://en.wikipedia.org/wiki/NoSQL) supports
+one-to-many and many-to-one "relationships", in order to declare them
+you can just use either: `it.has.one()` or `it.has.many()`
+declaration.
+
+Nevertheless there are two important things you must know about how
+Clay leverages the relationship feature:
+
+### 1. Relationships go through both lanes
+
+In my opinion, a snippet is worth than words:
+
+Supposing you have this declaration
+
+```javascript
+var Person = models.declare("Person", function(it, kind){
+    it.has.field("name", kind.string);
+});
+
+var Belonging = models.declare("Belonging", function(it, kind){
+    it.has.field("description", kind.string);
+    it.has.one("owner", Person, "belongings");
+});
+```
+
+This is telling Clay that *a Belonging has an owner*, as well as that *a Person has many belongings*
+
+Technically speaking, it means that internally Clay will make the declaration above idempodent to the example below:
+
+
+```javascript
+var Belonging = models.declare("Belonging", function(it, kind){
+    it.has.field("description", kind.string);
+});
+var Person = models.declare("Person", function(it, kind){
+    it.has.field("name", kind.string);
+    it.has.many("belonging", Person, "owner");
+});
+```
+
+Now, ain't that so cool?
+
+Now whenever you persist your data, as long as the dynamically
+assigned objects were already persisted, their references will be kept
+tracked by its related objects.
+
+## behavior: methods and properties
+
+Clay provides an object-oriented-friendly object declaration.
+
+So as expected, you can define class-level methods, instance-level
+methods, getters and setters.
+
+Once again, using code to show the magic:
+
+### class methods:
+
+```javascript
+var Animal = models.declare("Animal", function(it, kind){
+    it.has.field("name", kind.string);
+    it.has.field("sex", kind.string);
+    it.has.class_method("create_male", function(name){
+        return new this({sex: "male", name: name});
+    });
+});
+
+// now you can do:
+
+var leo = Animal.create_male("Lion");
+assert.equal(leo.name, "Lion");
+assert.equal(leo.sex, "male");
+
+### instance methods:
+
+```javascript
+var Person = models.declare("Person", function(it, kind){
+    it.has.field("name", kind.string);
+    it.has.method("say_hello", function(){
+        // yes, "this" is bound to the actual instance
+        console.log("Hello, I am " + this.name);
+    });
+});
+
+var john = new Person({name: "John Doe"});
+john.say_hello();
+```
+
+would produce the output
+
+```bash
+Hello, I am John Doe
+```
+
+### getters:
+
+```javascript
+var BankAccount = models.declare("BankAccount", function(it, kind){
+    it.has.field("balance", kind.numeric);
+    it.has.getter("is_positive", function(){
+        return this.balance > 0;
+    });
+    it.has.getter("is_negative", function(){
+        return this.balance < 0;
+    });
+});
+
+var red = new BankAccount({balance: -5000});
+red.is_negative() // true
+
+var green = new BankAccount({balance: 99});
+green.is_positive() // true
+```
+
+would produce the output
+
+```bash
+Hello, I am John Doe
+```
+
+### setters:
+
+```javascript
+var Person = models.declare("Person", function(it, kind){
+    it.has.field("first_name", kind.string);
+    it.has.field("last_name", kind.string);
+    it.has.setter("name", function(name){
+        var parts = name.trim().split(/\s+/);
+        if (parts.length == 2) {
+            this.first_name = parts[0];
+            this.last_name = parts[1];
+        } else {
+            this.first_name = name;
+            this.last_name = "";
+        }
+    });
+    it.has.getter("name", function(){
+        return [this.first_name, this.last_name].join(' ');
+    });
+
+});
+
+var john = new Person();
+john.name = "John Doe";
+assert.equal(john.first_name, "John");
+assert.equal(john.last_name, "John");
+```
+
+would produce the output
+
+```bash
+Hello, I am John Doe
 ```
 
 ## saving instances and its relationships
