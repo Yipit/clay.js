@@ -1,4 +1,4 @@
-s![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
+![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
 
 # clay.js
 > version 1.0.0
