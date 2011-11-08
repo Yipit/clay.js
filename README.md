@@ -435,7 +435,7 @@ adam.save(function(e, pk, instance){
         assert.equal(found.first.name, 'Adam Nelson');
         assert.equal(found.first.email, 'adam@yipit.com');
     });
-
+});
 ```
 # Hacking / Contributing
 
