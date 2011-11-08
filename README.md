@@ -194,41 +194,41 @@ lettuce_instructions.save(function(err, pk, model_instance, storage, redis_conne
 ```javascript
 var assert = require('assert');
 
-              var gabrielfalcao = new Build({
-                    name: 'Gabriel Falcão',
-                    email: 'gabriel@yipit.com',
-                    password: '123'
-                });
-                var b1 = new Build({
-                    status: 0,
-                    error: '',
-                    output: 'Worked!',
-                    author: gabrielfalcao
-                });
-                var b2 = new Build({
-                    status: 32,
-                    error: 'Failed!',
-                    output: 'OOps',
-                    author: gabrielfalcao
-                });
+var gabrielfalcao = new Build({
+    name: 'Gabriel Falcão',
+    email: 'gabriel@yipit.com',
+    password: '123'
+});
+var b1 = new Build({
+    status: 0,
+    error: '',
+    output: 'Worked!',
+    author: gabrielfalcao
+});
+var b2 = new Build({
+    status: 32,
+    error: 'Failed!',
+    output: 'OOps',
+    author: gabrielfalcao
+});
 
-                var lettuce_unit = new BuildInstruction({
-                    name: "Lettuce Unit Tests",
-                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
-                    build_command: 'make unit',
-                    owner: gabrielfalcao,
-                    builds: [b1, b2]
-                });
+var lettuce_unit = new BuildInstruction({
+    name: "Lettuce Unit Tests",
+    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+    build_command: 'make unit',
+    owner: gabrielfalcao,
+    builds: [b1, b2]
+});
 
-                gabrielfalcao.save(function(e, gabrielfalcao_pk){
-                    b1.save(function(e, b1_pk){
-                        b2.save(function(e, b2_pk){
-                            lettuce_unit.save(function(e4, lettuce_unit_pk){
-                                // from now one, whenever you fetch the BuildInstruction 'Lettuce Unit Tests', the related objects will be automatically fetched from the database
-                            });
-                        });
-                    });
-                });
+gabrielfalcao.save(function(e, gabrielfalcao_pk){
+    b1.save(function(e, b1_pk){
+        b2.save(function(e, b2_pk){
+            lettuce_unit.save(function(e4, lettuce_unit_pk){
+                // from now one, whenever you fetch the BuildInstruction 'Lettuce Unit Tests', the related objects will be automatically fetched from the database
+            });
+        });
+    });
+});
 
 ```
 
