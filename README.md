@@ -290,17 +290,21 @@ adam.save(function(e, pk, instance){
 ## 1. fork and clone the project
 ## 2. install [npm](http://npmjs.org)
 ## 3. install the dependencies with npm:
+
 ```bash
 cd clay.js
 npm install
 ```
 ## 4. install [Jake](https://github.com/mde/jake):
+
 ```bash
 npm install -g jake
 ```
+
 ## 5. run the tests
 
 **PS.:** *you need to have redis running in order to make the functional tests running*
+
 ```bash
 jake unit
 jake functional
