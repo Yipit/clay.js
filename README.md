@@ -284,19 +284,29 @@ adam.save(function(e, pk, instance){
     });
 
 ```
-# Contributing
+# Hacking / Contributing
 
-1. fork and clone the project
-2. install the dependencies above
-3. run the tests with make:
-    > make unit functional integration doctest
-4. hack at will
-5. commit, push etc
-6. send a pull request
 
-## WRITE TESTS!
+## 1. fork and clone the project
+## 2. install [npm](http://npmjs.org)
+## 3. install the dependencies with npm:
+```bash
+cd clay.js
+npm install
+```
+## 4. install [Jake](https://github.com/mde/jake):
+```bash
+npm install -g jake
+```
+## 5. run the tests
 
-![your lack of tests if disturbing the force](http://farm3.static.flickr.com/2248/2282734669_a7f431e660_o.jpg)
+**PS.:** *you need to have redis running in order to make the functional tests running*
+```bash
+jake unit
+jake functional
+```
+
+## 6. send the pull request
 
 # License
 
