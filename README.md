@@ -1,4 +1,4 @@
-![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
+s![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
 
 # clay.js
 > version 1.0.0
@@ -262,6 +262,9 @@ var Animal = models.declare("Animal", function(it, kind){
 var leo = Animal.create_male("Lion");
 assert.equal(leo.name, "Lion");
 assert.equal(leo.sex, "male");
+
+```
+
 
 ### instance methods:
 
