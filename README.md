@@ -339,6 +339,8 @@ var john = new Person();
 john.name = "John Doe";
 assert.equal(john.first_name, "John");
 assert.equal(john.last_name, "John");
+```
+
 
 ## saving instances and its relationships
 
