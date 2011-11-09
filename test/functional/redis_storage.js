@@ -502,7 +502,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             items[1].should.equal(b1)
         }
     }
-}).addBatch({
+/*}).addBatch({
     'finding items holding references to relationships': {
         topic: function(){
             var topic = this;
@@ -544,6 +544,19 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
             });
         },
+        'by id': {
+            topic: function(instruction, b1, b2, user){
+                var topic = this;
+                redis_storage.find_by_id(User, user.__id__, function(err, instance){
+                    topic.callback(err, instance, instruction, b1, b2, user);
+                });
+            },
+            'one-to-many items are auto assigned': function(user){
+                //console.log(JSON.stringify(user.__data__))
+                should.exist(user.builds);
+                user.should.have.property('builds').with.lengthOf(2)
+            }
+        }
         'one-to-many items': function(e, instruction, b1, b2, user){
             should.exist(user.builds);
             user.should.have.property('builds').with.lengthOf(2)
@@ -552,5 +565,5 @@ vows.describe('Redis Storage Mechanism').addBatch({
             // should.exist(user.builds);
             // should.exist(instruction.created_instructions);
         }
-    }
+    }*/
 }).export(module);
