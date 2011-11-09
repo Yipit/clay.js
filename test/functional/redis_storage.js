@@ -84,13 +84,13 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 __id__: '1',
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
-                password: 'b65c43168bf3621f4abeb857ba76ab028246df34'
+                password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
             });
             zach.__data__.should.eql({
                 __id__: 1,
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
-                password: 'b65c43168bf3621f4abeb857ba76ab028246df34'
+                password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
             });
         }
     },
@@ -209,13 +209,13 @@ vows.describe('Redis Storage Mechanism').addBatch({
                     __id__: '2',
                     name: 'Nitya Oberoi',
                     email: 'nitya@yipit.com',
-                    password: '6a3245c020e827d762dd7dc55a1196a5c3fda2e1'
+                    password: 'e31ea3b9d75b115e41b829dec532a758515a8dad'
                 },
                 {
                     __id__: '3',
                     name: 'Henri Xie',
                     email: 'henri@yipit.com',
-                    password: '9921510a6f322a268fdec1ebd8efd2e067fb1d29'
+                    password: 'bbe3b8e31729d5123da2c7f18e5e93e181738d97'
                 }
             ]);
         },
@@ -238,7 +238,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             should.deepEqual(instance.__data__, {
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
-                password: '0edcc2073e944ebb4a3a447d9bb6ebf043155ec1'
+                password: '2a30552503297ba3def8e3ac4a3471db109af763'
             });
         },
         'the data is also working through the getter': function(e, instance){
@@ -263,7 +263,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             should.deepEqual(instance.__data__, {
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
-                password: '0edcc2073e944ebb4a3a447d9bb6ebf043155ec1'
+                password: '2a30552503297ba3def8e3ac4a3471db109af763'
             });
         },
         'the data is also working through the getter': function(e, instance){
@@ -485,7 +485,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
                         b2.save(function(e3, b2){
                             lettuce_unit.save(function(e4, lettuce_unit){
                                 client.zrevrange(lettuce_unit + ':builds', 0, -1, function(e5, items){
-                                    topic.callback(e5, items, lettuce_unit, b1, b2, gabrielfalcao);
+                                    topic.callback(e5 || e4 || e3 || e2 || e1, items, lettuce_unit, b1, b2, gabrielfalcao);
                                 });
                             });
                         });
@@ -500,6 +500,57 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
             items[0].should.equal(b2)
             items[1].should.equal(b1)
+        }
+    }
+}).addBatch({
+    'finding items holding references to relationships': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function() {
+                var gabrielfalcao = new Build({
+                    name: 'Gabriel Falcão',
+                    email: 'gabriel@yipit.com',
+                    password: '123'
+                });
+                var b1 = new Build({
+                    status: 0,
+                    error: '',
+                    output: 'Worked!',
+                    author: gabrielfalcao
+                });
+                var b2 = new Build({
+                    status: 32,
+                    error: 'Failed!',
+                    output: 'OOps',
+                    author: gabrielfalcao
+                });
+
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit',
+                    owner: gabrielfalcao,
+                    builds: [b1, b2]
+                });
+
+                gabrielfalcao.save(function(e1, pk1, gabrielfalcao){
+                    b1.save(function(e2, pk2, b1){
+                        b2.save(function(e3, pk3, b2){
+                            lettuce_unit.save(function(e4, pk4, lettuce_unit){
+                                topic.callback(e4 || e3 || e2 || e1, lettuce_unit, b1, b2, gabrielfalcao);
+                            });
+                        });
+                    });
+                });
+            });
+        },
+        'one-to-many items': function(e, instruction, b1, b2, user){
+            should.exist(user.builds);
+            user.should.have.property('builds').with.lengthOf(2)
+
+            // should.exist(user.builds);
+            // should.exist(user.builds);
+            // should.exist(instruction.created_instructions);
         }
     }
 }).export(module);

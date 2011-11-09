@@ -136,7 +136,7 @@ vows.describe('A Model').addBatch({
             should.equal(p.username, 'gabrielfalcao');
             should.equal(p.email_address, 'gabriel@lettuce.it');
             should.equal(p.zipcode, '10019');
-            should.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
         },
         'can be created from a JSON buffer': function(Person) {
             var buf = new Buffer(JSON.stringify({
@@ -150,7 +150,7 @@ vows.describe('A Model').addBatch({
             should.equal(p.username, 'gabrielfalcao');
             should.equal(p.email_address, 'gabriel@lettuce.it');
             should.equal(p.zipcode, '10019');
-            should.equal(p.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
         },
         'can be created from a JSON buffer/string seamlessly': function(Person) {
             var raw = JSON.stringify({
@@ -167,12 +167,12 @@ vows.describe('A Model').addBatch({
             should.equal(p1.username, 'gabrielfalcao');
             should.equal(p1.email_address, 'gabriel@lettuce.it');
             should.equal(p1.zipcode, '10019');
-            should.equal(p1.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p1.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
 
             should.equal(p2.username, 'gabrielfalcao');
             should.equal(p2.email_address, 'gabriel@lettuce.it');
             should.equal(p2.zipcode, '10019');
-            should.equal(p2.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+            should.equal(p2.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
         },
 
         'after creating a functional instance of it': {
@@ -196,7 +196,7 @@ vows.describe('A Model').addBatch({
                 sha1.update('gabrielfalcao|sha1-clay|gabriel@lettuce.it|sha1-clay|123')
 
                 var expected_hash = sha1.digest('hex');
-                should.equal(expected_hash, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(expected_hash, '8a8190f626ad7ca100952c653f8b743efb849a47');
                 should.equal(gabrielfalcao.password, expected_hash);
             },
             'the frickin hash really works, this tests set it to something else and works': function (e, gabrielfalcao){
@@ -205,15 +205,15 @@ vows.describe('A Model').addBatch({
 
                 var expected_hash = sha1.digest('hex');
 
-                should.equal(expected_hash, 'f7d713c86afc8e76abf003416a83947070ae41eb');
-                should.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(expected_hash, '8074a15df732a28b9eb1088b49dfa26ca35fd4bf');
+                should.equal(gabrielfalcao.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
 
                 gabrielfalcao.password = 'somethingelse';
                 should.equal(gabrielfalcao.password, expected_hash);
             },
             'resetting the password also works': function (e, gabrielfalcao){
                 gabrielfalcao.password = '123';
-                should.equal(gabrielfalcao.password, '2f142e6c536282a7e72a1016b998bde6ec2d8c90');
+                should.equal(gabrielfalcao.password, '8a8190f626ad7ca100952c653f8b743efb849a47');
             },
             'the getter works': function(e, gabrielfalcao) {
                 should.equal(gabrielfalcao.email, 'gabriel@lettuce.it');
