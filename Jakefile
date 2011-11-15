@@ -3,12 +3,13 @@ var colors = require("colors");
 var child_process = require("child_process");
 
 var testKinds = ['unit', 'functional'];
+process.env['NODE_PATH'] = process.env['NODE_PATH'] + ':' + __dirname + '/../';
 
-var run_tests = function(kind){
+var run_tests = function(kind, pattern){
     var failed = false,
-    command = './node_modules/vows/bin/vows --spec test/' + kind + '/*';
 
-    process.env['NODE_PATH'] = process.env['NODE_PATH'] + ':' + __dirname + '/../';
+    command = './node_modules/vows/bin/vows --spec test/' + kind + '/' + (pattern || '') + '*';
+
     var test = child_process.exec(command, {env: process.env}, function(error, stdout, stderr){
         console.log(stdout.toString());
         console.log(stderr.toString());
@@ -21,11 +22,11 @@ var run_tests = function(kind){
 }
 
 desc('run all tests');
-task('default', [], function () {
-    run_tests('{unit,functional}')
+task('default', [], function (pattern) {
+    run_tests('{unit,functional}', pattern)
 });
 
 testKinds.forEach(function (val, index, array){
     desc('run only ' + val + ' tests');
-    task(val, [], function () { run_tests(val)});
+    task(val, [], function (pattern) { run_tests(val, pattern)});
 });
