@@ -45,23 +45,24 @@ vows.describe('Monkey-patches/Additions to the native prototypes').addBatch({
     },
     'Array.prototype.models return unique models': function() {
         var Person = models.declare('Person');
-        var p1 = new Person();p1.__id__ = 1;
-        var p2 = new Person();p2.__id__ = 2;
-        var p3 = new Person();p3.__id__ = 3;
+        var p1 = new Person({__id__: 1});
+        var p2 = new Person({__id__: 2});
+        var p3 = new Person({__id__: 3});
 
-        var p4 = new Person();p4.__data__.__id__ = 1;
-        var p5 = new Person();p5.__data__.__id__ = 2;
-        var p6 = new Person();p6.__data__.__id__ = 3;
+        var p4 = new Person({__id__: 1});
+        var p5 = new Person({__id__: 2});
+        var p6 = new Person({__id__: 3});
+
 
         var People = [];
-        People.push(p1);
-        People.push(p2);
-        People.push(p3);
-        People.push(p4);
-        People.push(p5);
-        People.push(p6);
+        People.add(p1);
+        People.add(p2);
+        People.add(p3);
+        People.add(p4);
+        People.add(p5);
+        People.add(p6);
 
-        People.models.should.eql([p1, p2, p3]);
+        People.should.eql([p1, p2, p3]);
     },
     'Number.prototype.times takes a callback': {
         'the first argument is the last captured error': function(){
