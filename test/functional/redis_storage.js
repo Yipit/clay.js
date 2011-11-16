@@ -236,6 +236,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
         },
         'instance.__data__ is also in place': function(e, instance){
             should.deepEqual(instance.__data__, {
+                __id__: 1,
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
                 password: '2a30552503297ba3def8e3ac4a3471db109af763'
@@ -261,6 +262,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
         },
         'instance.__data__ is also in place': function(e, instance){
             should.deepEqual(instance.__data__, {
+                __id__: 1,
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
                 password: '2a30552503297ba3def8e3ac4a3471db109af763'
@@ -422,10 +424,12 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 var gabrielfalcao = new User({
                     name: 'Gabriel Falcão',
                     email: 'gabriel@yipit.com',
-                    password: '123'
+                    password: '123',
+                    __id__: 1
                 });
 
                 var lettuce_unit = new BuildInstruction({
+                    __id__: 1,
                     name: "Lettuce Unit Tests",
                     repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
                     build_command: 'make unit',
@@ -502,23 +506,26 @@ vows.describe('Redis Storage Mechanism').addBatch({
             items[1].should.equal(b1)
         }
     }
-/*}).addBatch({
-    'finding items holding references to relationships': {
+}).addBatch({
+    'storage.sync(instance, callback) fetches the immediate relationships': {
         topic: function(){
             var topic = this;
             clear_redis(function() {
-                var gabrielfalcao = new Build({
+                var gabrielfalcao = new User({
+                    __id__: 1,
                     name: 'Gabriel Falcão',
                     email: 'gabriel@yipit.com',
                     password: '123'
                 });
                 var b1 = new Build({
+                    __id__: 1,
                     status: 0,
                     error: '',
                     output: 'Worked!',
                     author: gabrielfalcao
                 });
                 var b2 = new Build({
+                    __id__: 2,
                     status: 32,
                     error: 'Failed!',
                     output: 'OOps',
@@ -526,6 +533,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
 
                 var lettuce_unit = new BuildInstruction({
+                    __id__: 1,
                     name: "Lettuce Unit Tests",
                     repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
                     build_command: 'make unit',
@@ -533,37 +541,26 @@ vows.describe('Redis Storage Mechanism').addBatch({
                     builds: [b1, b2]
                 });
 
-                gabrielfalcao.save(function(e1, pk1, gabrielfalcao){
+                gabrielfalcao.save(function(e1, pk1, user){
                     b1.save(function(e2, pk2, b1){
                         b2.save(function(e3, pk3, b2){
                             lettuce_unit.save(function(e4, pk4, lettuce_unit){
-                                topic.callback(e4 || e3 || e2 || e1, lettuce_unit, b1, b2, gabrielfalcao);
+                                redis_storage.sync(user, function(e5, lettuce_unit){
+                                    topic.callback((e1 || e2 || e3 || e4 || e5), lettuce_unit, b1, b2, gabrielfalcao);
+                                });
                             });
                         });
                     });
                 });
             });
         },
-        'by id': {
-            topic: function(instruction, b1, b2, user){
-                var topic = this;
-                redis_storage.find_by_id(User, user.__id__, function(err, instance){
-                    topic.callback(err, instance, instruction, b1, b2, user);
-                });
-            },
-            'one-to-many items are auto assigned': function(user){
-                //console.log(JSON.stringify(user.__data__))
-                should.exist(user.builds);
-                user.should.have.property('builds').with.lengthOf(2)
-            }
-        }
-        'one-to-many items': function(e, instruction, b1, b2, user){
-            should.exist(user.builds);
-            user.should.have.property('builds').with.lengthOf(2)
+        'many to one': function (err, lettuce_unit, b1, b2, gabrielfalcao) {
+            gabrielfalcao.should.have.property('builds').with.lengthOf(2)
+            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1)
 
-            // should.exist(user.builds);
-            // should.exist(user.builds);
-            // should.exist(instruction.created_instructions);
+            should.equal(gabrielfalcao.builds[0].__id__, 1)
+            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1)
+
         }
-    }*/
+    }
 }).export(module);
