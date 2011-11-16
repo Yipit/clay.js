@@ -1,7 +1,7 @@
 ![logo](http://dl.dropbox.com/u/10561986/clay-logo.png)
 
 # clay.js
-> version 1.0.0
+> version 1.1.0
 
 # What
 
