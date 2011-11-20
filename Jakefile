@@ -1,4 +1,3 @@
-var sys = require("sys");
 var colors = require("colors");
 var child_process = require("child_process");
 

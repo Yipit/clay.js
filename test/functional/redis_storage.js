@@ -219,6 +219,30 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 }
             ]);
         },
+    },
+    'by calling *instance.delete(callback)*': {
+        topic: function() {
+            var topic = this;
+
+            clear_redis(function() {
+                var build = new Build({
+                    status: 0,
+                    error: '',
+                    output: 'Worked!'
+                });
+
+                build.save(function(err, key, b1, store, connection) {
+                    b1.delete(function(err){
+                        client.hgetall("clay:Build:id:" + b1.__id__, function(err, data){
+                            topic.callback(err, data);
+                        });
+                    });
+                });
+            });
+        },
+        'HGETALL clay:Build:id:1 gets empty': function(err, data) {
+            data.should.be.eql({});
+        },
     }
 }).addBatch({
     'find by id through storage mechanism': {
@@ -303,8 +327,8 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-            found[0].name.should.equal('Zach Smith');
-            found[1].name.should.equal('Steve Pulec');
+            found[0].name.should.equal('Steve Pulec');
+            found[1].name.should.equal('Zach Smith');
         }
     }
 }).addBatch({
@@ -338,9 +362,8 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-
-            found[0].name.should.equal('Zach Smith');
-            found[1].name.should.equal('Steve Pulec');
+            found[0].name.should.equal('Steve Pulec');
+            found[1].name.should.equal('Zach Smith');
         }
     }
 }).addBatch({
