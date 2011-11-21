@@ -191,7 +191,7 @@ lettuce_instructions.save(function(err, pk, model_instance, storage, redis_conne
 ```
 ## relationships
 
-Clay ["kind of support"](http://en.wikipedia.org/wiki/NoSQL) supports
+Clay ["kind of](http://en.wikipedia.org/wiki/NoSQL) supports
 one-to-many and many-to-one "relationships", in order to declare them
 you can just use either: `it.has.one()` or `it.has.many()`
 declaration.
