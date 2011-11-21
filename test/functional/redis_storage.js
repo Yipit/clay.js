@@ -332,6 +332,36 @@ vows.describe('Redis Storage Mechanism').addBatch({
         }
     }
 }).addBatch({
+    'find by indexed field, returning empty set': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                redis_storage.find_indexed_by_regex_match(User, 'email', /^gnu$/, function(err, found) {
+                    topic.callback(err, found);
+                });
+            });
+        },
+        'found 0 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(0)
+        }
+    }
+}).addBatch({
+    'find by non-indexed field, returning empty set': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                redis_storage.find_non_indexed_by_regex_match(User, 'email', /^gnu$/, function(err, found) {
+                    topic.callback(err, found);
+                });
+            });
+        },
+        'found 0 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(0)
+        }
+    }
+}).addBatch({
     'find by indexed field through model': {
         topic: function(){
             var topic = this;
@@ -564,11 +594,11 @@ vows.describe('Redis Storage Mechanism').addBatch({
                     builds: [b1, b2]
                 });
 
-                gabrielfalcao.save(function(e1, pk1, user){
-                    b1.save(function(e2, pk2, b1){
-                        b2.save(function(e3, pk3, b2){
-                            lettuce_unit.save(function(e4, pk4, lettuce_unit){
-                                redis_storage.sync(user, function(e5, lettuce_unit){
+                gabrielfalcao.save(function(e1, pk1, user) {
+                    b1.save(function(e2, pk2, b1) {
+                        b2.save(function(e3, pk3, b2) {
+                            lettuce_unit.save(function(e4, pk4, lettuce_unit) {
+                                redis_storage.sync(user, function(e5, lettuce_unit) {
                                     topic.callback((e1 || e2 || e3 || e4 || e5), lettuce_unit, b1, b2, gabrielfalcao);
                                 });
                             });
@@ -578,12 +608,11 @@ vows.describe('Redis Storage Mechanism').addBatch({
             });
         },
         'many to one': function (err, lettuce_unit, b1, b2, gabrielfalcao) {
-            gabrielfalcao.should.have.property('builds').with.lengthOf(2)
-            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1)
+            gabrielfalcao.should.have.property('builds').with.lengthOf(2);
+            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1);
 
-            should.equal(gabrielfalcao.builds[0].__id__, 1)
-            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1)
-
+            should.equal(gabrielfalcao.builds[0].__id__, 1);
+            gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1);
         }
     }
 }).export(module);
