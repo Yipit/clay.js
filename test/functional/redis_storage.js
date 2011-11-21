@@ -21,6 +21,7 @@ var User = models.declare("User", function(it, kind){
             "Hello, my name is ", this.name, ", it's nice to meet you"
         ].join('');
     });
+    it.validates.uniquenessOf("name");
     it.has.index('email');
     it.is_stored_with(redis_storage);
 });
@@ -245,37 +246,52 @@ vows.describe('Redis Storage Mechanism').addBatch({
         },
     }
 }).addBatch({
-    'find by id through storage mechanism': {
-        topic: function(store, folder){
+    'by calling *store.persist(instance, callback)*': {
+        topic: function() {
             var topic = this;
-            redis_storage.find_by_id(User, 1, function(err, instance){
-                topic.callback(err, instance);
+
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                redis_storage.persist(zach, function(err, key, zach, store, connection){
+                    client.hgetall(key, function(err, data){
+                        topic.callback(err, key, zach, store, connection, data);
+                    });
+                });
             });
         },
-        'instance.__id__ is in place': function(e, instance){
-            instance.__id__.should.equal('1');
-        },
-        'instance.__model__ is in place': function(e, instance){
-            instance.__model__.should.eql(User);
-        },
-        'instance.__data__ is also in place': function(e, instance){
-            should.deepEqual(instance.__data__, {
-                __id__: 1,
+        'it increments the index': function(err, key, zach, store, connection, data){
+            should.deepEqual(data, {
+                __id__: /\d+$/.exec(key)[0],
                 name: 'Zach Smith',
                 email: 'zach@yipit.com',
-                password: '2a30552503297ba3def8e3ac4a3471db109af763'
+                password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
             });
-        },
-        'the data is also working through the getter': function(e, instance){
-            should.equal(instance.name, 'Zach Smith')
+            should.deepEqual(zach.__data__, {
+                __id__: parseInt(/\d+$/.exec(key)[0]),
+                name: 'Zach Smith',
+                email: 'zach@yipit.com',
+                password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
+            });
         }
     }
 }).addBatch({
     'find by id through class method on model': {
         topic: function(store, folder){
             var topic = this;
-            User.find_by_id(1, function(err, instance){
-                topic.callback(err, instance);
+            var zach = new User({
+                __id__: 1,
+                name: 'Zach Smith',
+                email: 'zach@yipit.com',
+                password: 'cheezNwine'
+            });
+            zach.save(function(){
+                User.find_by_id(1, function(err, instance){
+                    topic.callback(err, instance);
+                });
             });
         },
         'instance.__id__ is in place': function(e, instance){
@@ -327,8 +343,8 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-            found[0].name.should.equal('Steve Pulec');
-            found[1].name.should.equal('Zach Smith');
+            should.equal(found[0].name, 'Zach Smith');
+            should.equal(found[1].name, 'Steve Pulec');
         }
     }
 }).addBatch({
@@ -392,8 +408,8 @@ vows.describe('Redis Storage Mechanism').addBatch({
             found[0].should.be.an.instanceof(User);
             found[1].should.be.an.instanceof(User);
 
-            found[0].name.should.equal('Steve Pulec');
-            found[1].name.should.equal('Zach Smith');
+            should.equal(found[0].name, 'Zach Smith');
+            should.equal(found[1].name, 'Steve Pulec');
         }
     }
 }).addBatch({
@@ -615,4 +631,86 @@ vows.describe('Redis Storage Mechanism').addBatch({
             gabrielfalcao.should.have.property('created_instructions').with.lengthOf(1);
         }
     }
+}).addBatch({
+    'incremental ids are incremental': {
+        topic: function(store, folder){
+            var topic = this;
+            var u1 = new User({name: 'User 1', email: 'u1@user.com', password: 'letmein'});
+            var u2 = new User({name: 'User 2', email: 'u2@user.com', password: 'letmein'});
+            var u3 = new User({name: 'User 3', email: 'u3@user.com', password: 'letmein'});
+            u1.save(function(err1, key1){
+                u2.save(function(err2, key2) {
+                    u3.save(function(err3, key3){
+                        topic.callback(null, key1, key2, key3);
+                    });
+                });
+            });
+        },
+        'when all the fields are different': function(e, key1, key2, key3){
+            key1.should.not.be.equal(key2);
+            key1.should.not.be.equal(key3);
+
+            key2.should.not.be.equal(key1);
+            key2.should.not.be.equal(key3);
+
+            key3.should.not.be.equal(key1);
+            key3.should.not.be.equal(key2);
+        }
+    },
+}).addBatch({
+    'incremental ids are incremental': {
+        topic: function(store, folder) {
+            var topic = this;
+            var u1 = new User({name: 'User 1', email: 'indexed@user.com', password: 'letmein'});
+            var u2 = new User({name: 'User 2', email: 'indexed@user.com', password: 'letmein'});
+            var u3 = new User({name: 'User 3', email: 'indexed@user.com', password: 'letmein'});
+            u1.save(function(err1, key1){
+                u2.save(function(err2, key2) {
+                    u3.save(function(err3, key3){
+                        topic.callback(null, key1, key2, key3);
+                    });
+                });
+            });
+        },
+        'even when an indexed field is saved as the same in many fields': function(e, key1, key2, key3){
+            key1.should.not.be.equal(key2);
+            key1.should.not.be.equal(key3);
+
+            key2.should.not.be.equal(key1);
+            key2.should.not.be.equal(key3);
+
+            key3.should.not.be.equal(key1);
+            key3.should.not.be.equal(key2);
+        }
+    },
+}).addBatch({
+    'incremental ids are incremental': {
+        topic: function(store, folder) {
+            var topic = this;
+            var u1 = new User({name: 'Unique User', email: 'u1@user.com', password: 'letmein'});
+            var u2 = new User({name: 'Unique User', email: 'u2@user.com', password: 'letmein'});
+            var u3 = new User({name: 'Unique User', email: 'u3@user.com', password: 'letmein'});
+
+            u1.save(function(err1, key1){
+                should.ifError(err1);
+                u2.save(function(err2, key2) {
+                    should.ifError(err2);
+                    u3.save(function(err3, key3){
+                        should.ifError(err3);
+                        topic.callback(null, key1, key2, key3);
+                    });
+                });
+            });
+        },
+        'even when an indexed field is saved as the same in many fields': function(e, key1, key2, key3){
+            key1.should.not.be.equal(key2);
+            key1.should.not.be.equal(key3);
+
+            key2.should.not.be.equal(key1);
+            key2.should.not.be.equal(key3);
+
+            key3.should.not.be.equal(key1);
+            key3.should.not.be.equal(key2);
+        }
+    },
 }).export(module);
