@@ -235,14 +235,46 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 build.save(function(err, key, b1, store, connection) {
                     b1.delete(function(err){
                         client.hgetall("clay:Build:id:" + b1.__id__, function(err, data){
-                            topic.callback(err, data);
+                            topic.callback(err, data, b1.__data__);
                         });
                     });
                 });
             });
         },
-        'HGETALL clay:Build:id:1 gets empty': function(err, data) {
-            data.should.be.eql({});
+        'HGETALL clay:Build:id:1 gets empty': function(err, empty, full) {
+            empty.should.be.eql({});
+            full.should.be.eql({
+                __id__: 2,
+                status: 0,
+                error: '',
+                output: 'Worked!'
+            });
+            empty.should.not.be.eql(full);
+        },
+    },
+    'by calling *instance.delete(callback)*': {
+        topic: function() {
+            var topic = this;
+
+            clear_redis(function() {
+                var build = new Build({
+                    __id__: 66,
+                    status: 0,
+                    error: '',
+                    output: 'Worked!'
+                });
+
+                build.save(function(err, key, b1, store, connection) {
+                    b1.delete(function(err){
+                        Build.find_by_id(66, function(err, b66){
+                            topic.callback(err, b66);
+                        });
+                    });
+                });
+            });
+        },
+        'finding by id returns null': function(err, build) {
+            build.should.not.be.equal(null);
         },
     }
 }).addBatch({
@@ -429,8 +461,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
 
                 redis_storage.persist([lettuce_unit, lettuce_functional], function(){
-
-                    redis_storage.find_by_regex_match(BuildInstruction, 'name', /unit/i, function(err, found) {
+                    redis_storage.find_non_indexed_by_regex_match(BuildInstruction, 'name', /unit/i, function(err, found) {
                         topic.callback(err, found);
                     });
 
@@ -439,14 +470,11 @@ vows.describe('Redis Storage Mechanism').addBatch({
         },
         'found 2 items': function(e, found){
             should.exist(found);
-            found.should.have.length(2)
+            found.should.have.length(1)
         },
         'they are models': function(e, found){
             found[0].should.be.an.instanceof(BuildInstruction);
-            found[1].should.be.an.instanceof(BuildInstruction);
-
             found[0].name.should.equal('Lettuce Unit Tests');
-            found[1].name.should.equal('Lettuce Functional Tests');
         }
     }
 }).addBatch({
@@ -473,11 +501,45 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
             });
         },
+        'found 1 items': function(e, found){
+            should.exist(found);
+            found.should.have.length(1)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(BuildInstruction);
+            found[0].name.should.equal('Lettuce Unit Tests');
+        }
+    }
+}).addBatch({
+    'Model.all returns all instances': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit'
+                });
+                var lettuce_functional = new BuildInstruction({
+                    name: "Lettuce Functional Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make functional'
+                });
+                lettuce_unit.save(function(){
+                    lettuce_functional.save(function(){
+                        BuildInstruction.all(topic.callback);
+                    });
+                });
+            });
+        },
         'found 2 items': function(e, found){
             should.exist(found);
             found.should.have.length(2)
         },
         'they are models': function(e, found){
+            should.ifError(e);
+            should.exist(found);
+            found.should.have.length(2);
             found[0].should.be.an.instanceof(BuildInstruction);
             found[1].should.be.an.instanceof(BuildInstruction);
 
