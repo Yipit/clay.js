@@ -2,7 +2,7 @@
     "name": "clay"
   , "version": "1.1.5"
   , "description": "A Node.js Active Record with a charming declaration and simple usage. Supports Redis as backend but can be easily extended"
-  , "keywords": ["Active Record", "Redis", "database"]
+  , "keywords": ["Active Record", "Redis", "database", "ORM", "model", "models", "persistence", "db"]
   , "homepage": "http://github.com/Yipit/clay.js"
   , "bugs": "http://github.com/Yipit/clay.js/issues"
   , "main": "./index.js"
