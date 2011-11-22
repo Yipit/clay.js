@@ -30,6 +30,8 @@ var Build = models.declare("Build", function(it, kind){
     it.has.field("status", kind.numeric);
     it.has.field("error", kind.string);
     it.has.field("output", kind.string);
+    it.has.field("started_at", kind.auto);
+    it.has.field("finished_at", kind.datetime);
     it.has.one("author", User, "builds");
     it.is_stored_with(redis_storage);
 });
@@ -100,6 +102,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             var topic = this;
 
             clear_redis(function(){
+                var now = new Date().toUTCString();
                 var b1 = new Build({
                     status: 0,
                     error: '',
@@ -107,25 +110,27 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
                 b1.save(function(err, key, b1, store, connection){
                     client.hgetall("clay:Build:id:1", function(err, data){
-                        topic.callback(err, key, b1, store, connection, data);
+                        topic.callback(err, key, b1, store, connection, data, now);
                     });
                 });
             });
         },
-        'it increments the index': function(err, key, b1, store, connection, data) {
+        'it increments the index': function(err, key, b1, store, connection, data, now) {
             key.should.equal('clay:Build:id:1')
             data.should.eql({
                 __id__: '1',
                 status: '0',
                 error: '',
-                output: 'Worked!'
+                output: 'Worked!',
+                started_at: now
             });
 
             b1.__data__.should.eql({
                 __id__: 1,
                 status: 0,
                 error: '',
-                output: 'Worked!'
+                output: 'Worked!',
+                started_at: now
             });
         },
         'changing an already saved instance just update the values': {

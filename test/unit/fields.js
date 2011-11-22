@@ -43,6 +43,30 @@ vows.describe('Model fields').addBatch({
                 );
             }, models.FieldValidationError);
         },
+        '*"auto"* assigns the current *date/time*': function(kinds) {
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    kinds.auto(null, null, null),
+                    (new Date()).toString()
+                );
+            }, models.FieldValidationError);
+        },
+        '*"auto"* should ignore a valid date string': function(kinds) {
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    kinds.auto(null, null, "Tue, 22 Nov 2011 06:32:43 GMT").toUTCString(),
+                    (new Date()).toUTCString()
+                );
+            }, models.FieldValidationError);
+        },
+        'date takes a string and returns a date object': function(kinds) {
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    kinds.datetime(null, null, "Tue, 22 Nov 2011 06:32:43 GMT").toUTCString(),
+                    "Tue, 22 Nov 2011 06:32:43 GMT"
+                );
+            }, models.FieldValidationError);
+        },
         'slug accepts string': function(kinds) {
             assert.doesNotThrow(function(){
                 assert.equal(

@@ -39,6 +39,8 @@ vows.describe('A Model').addBatch({
             return models.declare("Person", function(it, kind){
                 it.has.field("username", kind.alphanumeric);
                 it.has.field("email_address", kind.email);
+                it.has.field("birthdate", kind.datetime);
+                it.has.field("created_at", kind.auto);
                 it.has.field("zipcode", kind.numeric);
                 it.has.field("password", kind.hashOf(["username", "email_address"]));
 
@@ -83,7 +85,7 @@ vows.describe('A Model').addBatch({
         'the declared field names are available': function(Person) {
             should.deepEqual(
                 Person._meta.field.names,
-                ['username', 'email_address', 'zipcode', 'password']
+                ['username', 'email_address', 'birthdate', 'created_at', 'zipcode', 'password']
             );
         },
         'obligatory fields are stored': function(Person) {
@@ -178,13 +180,15 @@ vows.describe('A Model').addBatch({
         'after creating a functional instance of it': {
             topic: function(Person) {
                 var topic = this;
+                var now = new Date()
                 Person.create({
                     username: 'gabrielfalcao',
                     email_address: 'gabriel@lettuce.it',
                     zipcode: 10019,
-                    password: '123'
+                    password: '123',
+                    birthdate: "1988-02-25"
                 }, function(e, gabrielfalcao){
-                    topic.callback(e, gabrielfalcao, Person);
+                    topic.callback(e, gabrielfalcao, Person, now);
                 });
             },
             'the model is available through instance.__model__': function (e, gabrielfalcao, Person){
@@ -239,7 +243,16 @@ vows.describe('A Model').addBatch({
                     Person.foo(),
                     'fooooooooooooooooooooo'
                 );
+            },
+            'the date was parsed properly': function(e, gabrielfalcao, Person, now) {
+                gabrielfalcao.birthdate.should.be.an.instanceof(Date)
+                gabrielfalcao.birthdate.toFormat("DD/MM/YYYY").should.equal('25/02/1988')
+            },
+            'the auto field worked': function(e, gabrielfalcao, Person, now) {
+                gabrielfalcao.created_at.should.be.an.instanceof(Date)
+                gabrielfalcao.created_at.toFormat("DD/MM/YYYY").should.equal(now.toFormat('DD/MM/YYYY'))
             }
+
         },
         "by creating an instance that doesn't fulfill a required field": {
             topic: function(Person) {
@@ -248,7 +261,7 @@ vows.describe('A Model').addBatch({
                     email_address: 'gabriel@lettuce.it',
                     zipcode: 10019,
                     password: '123'
-                }, function(e, gabrielfalcao){
+                }, function(e, gabrielfalcao) {
                     topic.callback(e, gabrielfalcao, Person);
                 });
             },

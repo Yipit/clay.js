@@ -102,6 +102,33 @@ var Foo = models.declare('Foo', function(it, kind){
 });
 ```
 
+### datetime
+
+returns a `new Date(value)`, be aware that clay is [date-utils](https://github.com/JerrySievert/node-date-utils) powered
+
+`USAGE:`
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('birth_day', kind.datetime);
+});
+```
+
+### auto
+
+auto-assigns a `new Date()` to the given field whenever a `new Model` is issued
+
+`USAGE:`
+
+```javascript
+var Foo = models.declare('Foo', function(it, kind){
+    it.has.field('created_at', kind.auto);
+});
+
+var x = new Foo();
+x.created_at.toFormat("DD/MM/YYYY") /* should be "today" */
+```
+
 ### email
 
 shorthand for the regexp `/^\w+[@]\w+[.]\w{2,}$/`
