@@ -103,12 +103,11 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
             clear_redis(function(){
                 var now = new Date().toUTCString();
-                var b1 = new Build({
+                Build.create({
                     status: 0,
                     error: '',
                     output: 'Worked!'
-                });
-                b1.save(function(err, key, b1, store, connection){
+                }, function(err, key, b1, store, connection){
                     client.hgetall("clay:Build:id:1", function(err, data){
                         topic.callback(err, key, b1, store, connection, data, now);
                     });
@@ -136,14 +135,13 @@ vows.describe('Redis Storage Mechanism').addBatch({
         'changing an already saved instance just update the values': {
             topic : function(){
                 var topic = this;
-                var u3 = new User({
+                User.create({
                     name: 'Ben',
                     email: 'ben@yipit.com',
                     password: 'this is ben'
-                });
-                u3.save(function(e, key1){
-                    u3.name = 'Ben Plesser'
-                    u3.save(function(e, key2){
+                }, function(e, key1, u1){
+                    u1.name = 'Ben Plesser'
+                    u1.save(function(e, key2){
                         topic.callback(null, key1, key2);
                     });
 
