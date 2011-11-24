@@ -135,16 +135,20 @@ vows.describe('Redis Storage Mechanism').addBatch({
         'changing an already saved instance just update the values': {
             topic : function(){
                 var topic = this;
-                User.create({
-                    name: 'Ben',
-                    email: 'ben@yipit.com',
-                    password: 'this is ben'
-                }, function(e, key1, u1){
-                    u1.name = 'Ben Plesser'
-                    u1.save(function(e, key2){
-                        topic.callback(null, key1, key2);
-                    });
 
+                clear_redis(function(){
+                    User.create({
+                        name: 'Benedict',
+                        email: 'ben@yipit.com',
+                        password: 'this is ben'
+                    }, function(e, key1, u1){
+                        should.ifError(e)
+                        u1.name = 'Ben Plesser'
+                        u1.save(function(e, key2){
+                            topic.callback(null, key1, key2);
+                        });
+
+                    });
                 });
             },
             'so that it keeps the key': function(e, key1, key2) {
@@ -183,24 +187,24 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
             clear_redis(function(){
                 var nitya = new User({
-                    name: 'Nitya Oberoi',
+                    name: 'Nitya Oberoi 2',
                     email: 'nitya@yipit.com',
                     password: 'hackoutloud'
                 });
                 var henri = new User({
-                    name: 'Henri Xie',
+                    name: 'Henri Xie 2',
                     email: 'henri@yipit.com',
                     password: 'switzerland'
                 });
                 var nitya_and_henri = [nitya, henri];
 
-                redis_storage.persist(nitya_and_henri, function(err, key, zach, store, connection){
+                redis_storage.persist(nitya_and_henri, function(err1, key, zach, store, connection){
                     var items = [];
                     _.each(nitya_and_henri, function(item){
                         client.hgetall("clay:User:id:" + item.__id__, function(err, data){
                             items.push(data);
                             if (items.length == 2) {
-                                topic.callback(null, items);
+                                topic.callback(err1, items);
                             }
                         });
                     });
@@ -208,18 +212,19 @@ vows.describe('Redis Storage Mechanism').addBatch({
             });
         },
         'it is stored properly': function(err, items){
+            should.ifError(err);
             items.should.eql([
                 {
                     __id__: '2',
-                    name: 'Nitya Oberoi',
+                    name: 'Nitya Oberoi 2',
                     email: 'nitya@yipit.com',
-                    password: 'e31ea3b9d75b115e41b829dec532a758515a8dad'
+                    password: '1842f3c223d89346d65f89d68f4f09189dcfe515'
                 },
                 {
                     __id__: '3',
-                    name: 'Henri Xie',
+                    name: 'Henri Xie 2',
                     email: 'henri@yipit.com',
-                    password: 'bbe3b8e31729d5123da2c7f18e5e93e181738d97'
+                    password: 'ab2473ebd3ad20c0692f4440667c8c5b93f35db0'
                 }
             ]);
         },
