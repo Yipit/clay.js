@@ -448,6 +448,72 @@ vows.describe('Redis Storage Mechanism').addBatch({
         }
     }
 }).addBatch({
+    'find by indexed field through model when does not exist': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                var steve = new User({
+                    name: 'Steve Pulec',
+                    email: 'steve@yipit.com',
+                    password: 'steeeeve'
+                });
+
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
+                    User.find_by_email(/foo@gnu.org/, function(err, found) {
+                        topic.callback(null, err, found);
+                    });
+                });
+            });
+        },
+        'it is empty': function(e, err, items){
+            should.exist(items);
+            items.should.be.an.instanceof(Array)
+            items.should.be.empty;
+        },
+        'the error says it was not found': function(e, err){
+            should.exist(err);
+            err.message.should.equal('could not find any "email" matching the regex /foo@gnu.org/');
+        }
+    }
+}).addBatch({
+    'find by non-indexed field through model when does not exist': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                var steve = new User({
+                    name: 'Steve Pulec',
+                    email: 'steve@yipit.com',
+                    password: 'steeeeve'
+                });
+
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
+                    User.find_by_password(/^aaaa$/, function(err, found) {
+                        topic.callback(null, err, found);
+                    });
+                });
+            });
+        },
+        'it is empty': function(e, err, items){
+            should.exist(items);
+            items.should.be.an.instanceof(Array)
+            items.should.be.empty;
+        },
+        'the error says it was not found': function(e, err){
+            should.exist(err);
+            err.message.should.equal('could not find any "password" matching the regex /^aaaa$/');
+        }
+    }
+}).addBatch({
     'find by non-indexed field through storage mechanism': {
         topic: function(){
             var topic = this;
