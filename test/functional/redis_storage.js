@@ -514,6 +514,28 @@ vows.describe('Redis Storage Mechanism').addBatch({
         }
     }
 }).addBatch({
+    'attempt to save with duplicate value in an unique field': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach1 = new User({
+                    name: 'Zach'
+                });
+                var zach2 = new User({
+                    name: 'Zach'
+                });
+
+                redis_storage.persist([zach1, zach2], function(err){
+                    topic.callback(null, err);
+                });
+            });
+        },
+        'should have an error with a nice, meaningful message': function(e, err){
+            should.exist(err);
+            err.message.should.equal('the field User.name is unique, and got an attempt to save a duplicate "Zach"');
+        }
+    }
+}).addBatch({
     'find by non-indexed field through storage mechanism': {
         topic: function(){
             var topic = this;
