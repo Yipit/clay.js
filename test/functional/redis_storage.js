@@ -279,6 +279,32 @@ vows.describe('Redis Storage Mechanism').addBatch({
         'finding by id returns null': function(err, build) {
             build.should.not.be.equal(null);
         },
+    },
+    'by calling *instance.delete(callback)*': {
+        topic: function() {
+            var topic = this;
+
+            clear_redis(function() {
+                User.create({
+                    name: "Cap'n Nyobe",
+                    email: "nitya@yipit.com",
+                    password: "123"
+                }, function(err, key, obj){
+                    obj.delete(function(err){
+                        client.zrange("clay:User:indexes:email:nitya@yipit.com", 0, -1, function(err, found){
+                            topic.callback(err, found, key);
+                        });
+                    });
+                });
+            });
+        },
+        'it gets removed from its indexes': function(err, indexes, key) {
+            should.exist(indexes);
+            should.exist(key);
+
+            indexes.should.be.an.instanceof(Array);
+            indexes.should.not.contain(key);
+        },
     }
 }).addBatch({
     'by calling *store.persist(instance, callback)*': {
