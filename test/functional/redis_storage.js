@@ -359,27 +359,26 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
                 var steve = new User({
                     name: 'Steve Pulec',
-                    email: 'steve@yipit.com',
+                    email: 'spulec@gmail.com',
                     password: 'steeeeve'
                 });
 
-                redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
-                    redis_storage.find_by_regex_match(User, 'email', /.*[@]yipit.com$/, function(err, found) {
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection) {
+                    redis_storage.find_indexed_by_regex_match(User, 'email', /.*[@]yipit.com$/, function(err, found) {
                         topic.callback(err, found);
                     });
                 });
             });
         },
-        'found 2 items': function(e, found){
+        'found 1 item': function(e, found){
             should.exist(found);
-            found.should.have.length(2)
+            found.should.have.length(1)
         },
-        'they are models': function(e, found){
+        'which is a model': function(e, found){
             found[0].should.be.an.instanceof(User);
-            found[1].should.be.an.instanceof(User);
 
             should.equal(found[0].name, 'Zach Smith');
-            should.equal(found[1].name, 'Steve Pulec');
+            should.equal(found[0].email, 'zach@yipit.com');
         }
     }
 }).addBatch({
@@ -497,7 +496,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
 
                 redis_storage.persist([zach, steve], function(err, key, zach, store, connection){
-                    User.find_by_password(/^aaaa$/, function(err, found) {
+                    redis_storage.find_non_indexed_by_regex_match(User, 'password', /^aaaa$/, function(err, found) {
                         topic.callback(null, err, found);
                     });
                 });
