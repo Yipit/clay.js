@@ -348,7 +348,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
         }
     }
 }).addBatch({
-    'find by indexed field through storage mechanism': {
+    'find by indexed field through storage mechanism *with regex*': {
         topic: function(){
             var topic = this;
             clear_redis(function(){
@@ -379,6 +379,40 @@ vows.describe('Redis Storage Mechanism').addBatch({
 
             should.equal(found[0].name, 'Zach Smith');
             should.equal(found[0].email, 'zach@yipit.com');
+        }
+    }
+}).addBatch({
+    'find by indexed field through storage mechanism *with string*': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var zach = new User({
+                    name: 'Zach Smith',
+                    email: 'zach@yipit.com',
+                    password: 'cheezNwine'
+                });
+                var steve = new User({
+                    name: 'Steve Pulec',
+                    email: 'spulec@gmail.com',
+                    password: 'steeeeve'
+                });
+
+                redis_storage.persist([zach, steve], function(err, key, zach, store, connection) {
+                    redis_storage.find_indexed_by_regex_match(User, 'email', "spulec@gmail.com", function(err, found) {
+                        topic.callback(err, found);
+                    });
+                });
+            });
+        },
+        'found 1 item': function(e, found){
+            should.exist(found);
+            found.should.have.length(1)
+        },
+        'which is a model': function(e, found){
+            found[0].should.be.an.instanceof(User);
+
+            should.equal(found[0].name, 'Steve Pulec');
+            should.equal(found[0].email, 'spulec@gmail.com');
         }
     }
 }).addBatch({
@@ -536,13 +570,48 @@ vows.describe('Redis Storage Mechanism').addBatch({
                 });
             });
         },
-        'found 2 items': function(e, found){
+        'found 1 item': function(e, found){
             should.exist(found);
             found.should.have.length(1)
         },
         'they are models': function(e, found){
             found[0].should.be.an.instanceof(BuildInstruction);
             found[0].name.should.equal('Lettuce Unit Tests');
+        }
+    }
+}).addBatch({
+    'find by non-indexed field through storage mechanism': {
+        topic: function(){
+            var topic = this;
+            clear_redis(function(){
+                var lettuce_unit = new BuildInstruction({
+                    name: "Lettuce Unit Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make unit'
+                });
+                var lettuce_functional = new BuildInstruction({
+                    name: "Lettuce Functional Tests",
+                    repository_address: 'git://github.com/gabrielfalcao/lettuce.git',
+                    build_command: 'make functional'
+                });
+
+                redis_storage.persist([lettuce_unit, lettuce_functional], function(){
+                    redis_storage.find_non_indexed_by_regex_match(BuildInstruction, 'name', "Lettuce Functional Tests", function(err, found) {
+                        topic.callback(err, found);
+                    });
+
+                });
+            });
+        },
+        'found 1 item': function(e, found){
+            should.exist(found);
+            found.should.have.length(1)
+        },
+        'they are models': function(e, found){
+            found[0].should.be.an.instanceof(BuildInstruction);
+            found[0].name.should.equal('Lettuce Functional Tests');
+            found[0].repository_address.should.equal('git://github.com/gabrielfalcao/lettuce.git');
+            found[0].build_command.should.equal('make functional');
         }
     }
 }).addBatch({
