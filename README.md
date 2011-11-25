@@ -1,7 +1,7 @@
 ![logo](http://gabrielfalcao.github.com/img/clay.png)
 
 # clay.js
-> version 1.2.0
+> version 1.2.1
 
 # What
 
