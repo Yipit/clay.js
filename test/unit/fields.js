@@ -27,7 +27,7 @@ var vows = require('vows')
 , assert = require('assert')
 , crypto = require('crypto');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 
 
 vows.describe('Model fields').addBatch({

@@ -29,7 +29,7 @@ var vows = require('vows')
 , _ = require('underscore')._
 , crypto = require('crypto');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 
 vows.describe('Models *"talking"* to a store').addBatch({
     'when you declare a model, it is possible to specify its store': function(){
