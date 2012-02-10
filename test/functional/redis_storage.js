@@ -303,7 +303,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             should.exist(key);
 
             indexes.should.be.an.instanceof(Array);
-            indexes.should.not.contain(key);
+            indexes.should.not.include(key);
         },
     }
 }).addBatch({

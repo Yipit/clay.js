@@ -255,8 +255,8 @@ vows.describe('Relationships').addBatch({
         i1.owner.name.should.equal('John Doe');
         i2.owner.name.should.equal('John Doe');
 
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.contain(i2.__id__);
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.contain(i1.__id__);
+        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i2.__id__);
+        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i1.__id__);
     },
     '*many-to-one* self-assignment to the affected instance': function(){
         var Item = models.declare('Item', function(it, kind){
@@ -307,7 +307,7 @@ vows.describe('Relationships').addBatch({
         i1.owner.name.should.equal('John Doe');
         i2.owner.name.should.equal('John Doe');
 
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.contain(i2.__id__);
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.contain(i1.__id__);
+        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i2.__id__);
+        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i1.__id__);
     }
 }).export(module);
