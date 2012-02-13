@@ -104,7 +104,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             keys.should.be.an.instanceof(Array);
             keys.should.have.lengthOf(1);
 
-            keys[0].should.equal('clay:User:id:1')
+            keys[0].should.equal('clay:User:id:1');
 
             should.exist(zach_array);
             zach_array.should.be.an.instanceof(Array);
