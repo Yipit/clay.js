@@ -239,10 +239,10 @@ vows.describe('Relationships').addBatch({
             it.has.one('owner', Owner, 'items');
         });
 
-        var i1 = new Item({description: 'Bar'});
-        var i2 = new Item({description: 'Foo'});
+        var i1 = new Item({description: 'Bar', __id__: 1});
+        var i2 = new Item({description: 'Foo', __id__: 2});
 
-        var o1 = new Owner({name: 'John Doe', items: [i1, i2]});
+        var o1 = new Owner({name: 'John Doe', items: [i1, i2], __id__:1});
 
         should.exist(i1.owner);
         should.exist(i2.owner);
@@ -291,10 +291,10 @@ vows.describe('Relationships').addBatch({
             it.has.many('items', Item, 'owner');
         });
 
-        var i1 = new Item({description: 'Bar'});
-        var i2 = new Item({description: 'Foo'});
+        var i1 = new Item({description: 'Bar', __id__: 1});
+        var i2 = new Item({description: 'Foo', __id__: 2});
 
-        var o1 = new Owner({name: 'John Doe', items: [i1, i2]});
+        var o1 = new Owner({name: 'John Doe', items: [i1, i2], __id__:1});
 
         should.exist(i1.owner);
         should.exist(i2.owner);

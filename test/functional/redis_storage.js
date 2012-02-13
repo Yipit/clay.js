@@ -85,7 +85,7 @@ vows.describe('Redis Storage Mechanism').addBatch({
             key.should.equal('clay:User:id:1')
             data.should.eql({
                 __id__: '1',
-                name: 'Zach Smith',
+                name: 'Zach Sdith',
                 email: 'zach@yipit.com',
                 password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
             });
