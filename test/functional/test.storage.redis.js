@@ -1,6 +1,7 @@
 var
 _        = require('underscore')._
 , async  = require('async')
+, should  = require('should')
 , client = require('redis').createClient();
 
 var models = require('clay');
@@ -264,6 +265,63 @@ describe('Instance lookup', function(){
             });
         });
     });
+
+    describe('calling Model#find_by_id(number)'.yellow.bold, function() {
+        it('does not fail', function(done){
+            BuildInstruction.find_by_id(68, done);
+        });
+
+        it('returns the result', function(done){
+            BuildInstruction.find_by_id(68, function(with_problems, item){
+                if (with_problems) return done(with_problems);
+
+                item.should.be.an.instanceof(BuildInstruction);
+                item.should.have.property('name', 'Lorem Ipsum project #68');
+                item.should.have.property('repository_address', 'git@github.com:lorem/ipsum-68-sit-amet.git');
+                item.should.have.property('build_command', 'make test:unit:68');
+                done();
+            });
+        });
+
+        it('returns null when not found', function(done){
+            BuildInstruction.find_by_id(999, function(with_problems, item){
+                if (with_problems) return done(with_problems);
+
+                should.not.exist(item);
+                done();
+            });
+        });
+
+    });
+
+    describe('calling Model#get_by_id(number)'.yellow.bold, function() {
+        it('does not fail', function(done){
+            BuildInstruction.get_by_id(68, done);
+        });
+
+        it('returns the result', function(done){
+            BuildInstruction.get_by_id(68, function(with_problems, item){
+                if (with_problems) return done(with_problems);
+
+                item.should.be.an.instanceof(BuildInstruction);
+                item.should.have.property('name', 'Lorem Ipsum project #68');
+                item.should.have.property('repository_address', 'git@github.com:lorem/ipsum-68-sit-amet.git');
+                item.should.have.property('build_command', 'make test:unit:68');
+                done();
+            });
+        });
+
+        it('returns null when not found', function(done){
+            BuildInstruction.get_by_id(999, function(with_problems, item){
+                if (with_problems) return done(with_problems);
+
+                should.not.exist(item);
+                done();
+            });
+        });
+
+    });
+
     describe('calling Model#ordered_by.one_field.find_by_field_name'.yellow.bold, function() {
         it('returns the many results given the order by "one_field"');
     });
@@ -317,10 +375,8 @@ describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage
         })
     });
 
-    describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
-        it('should keep the index');
-    });
-    describe('through '+'instance.save(callback)'.yellow.bold, function() {
-        it('should increment the index');
+    describe('issuing ' + 'Model#erase'.yellow.bold, function(){
+        it('should cause the models to be deleted from the database');
     });
 });
+
