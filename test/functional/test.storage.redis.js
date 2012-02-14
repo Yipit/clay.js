@@ -59,7 +59,7 @@ function clear_redis(callback) {
 
 function create_a_lot_of_records (done){
     clear_redis(function(){
-        async.map(_.range(1000), function(index, callback){
+        async.map(_.range(100), function(index, callback){
             var num = (index + 1);
             BuildInstruction.create({
                 name: 'Lorem Ipsum project #' + num,
@@ -195,7 +195,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
         });
     });
 });
-describe('Given a lot of models are created '+'(1000+)'.green.bold, function(){
+describe('Given a lot of models are created '+'(100+)'.green.bold, function(){
     beforeEach(create_a_lot_of_records);
 
     it('the counter should match', function(done){
@@ -203,7 +203,7 @@ describe('Given a lot of models are created '+'(1000+)'.green.bold, function(){
             if (with_problems) return done(with_problems);
 
             total.should.be.ok;
-            total.should.equal('1000');
+            total.should.equal('100');
 
             done();
         })
@@ -213,7 +213,7 @@ describe('Given a lot of models are created '+'(1000+)'.green.bold, function(){
             if (with_problems) return done(with_problems);
 
             items.should.be.an.instanceof(Array);
-            items.should.have.length(1000);
+            items.should.have.length(100);
             done();
         })
     });
