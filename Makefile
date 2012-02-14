@@ -2,7 +2,7 @@ all: init clean unit functional
 
 export NODE_PATH:=$(NODE_PATH):$(PWD)/../
 export MOCHA_BIN:=$(PWD)/node_modules/mocha/bin/mocha
-export MOCHA_CMD:=$(MOCHA_BIN) -b -u bdd -r should -r colors -R spec test/kind/test.*.js
+export MOCHA_CMD:=$(MOCHA_BIN) -t 200 -b -u bdd -r should -r colors -R spec test/kind/test.*.js
 
 init:
 	@echo "installing mocha (if necessary)..."
