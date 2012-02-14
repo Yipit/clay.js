@@ -1,5 +1,6 @@
 var
-  async = require('async')
+_        = require('underscore')._
+, async  = require('async')
 , client = require('redis').createClient();
 
 var models = require('clay');
@@ -43,21 +44,6 @@ function clear_redis(callback) {
     var topic = this;
 
     async.waterfall([
-        function wait_for_lock(callback) {
-            var counter = 0;
-            var handle = setInterval(function(){
-                client.get('clay|lock|persist', function(err, locked){
-                    counter++;
-                    if (err || (!locked) ) {
-                        clearInterval(handle);
-                        callback(err);
-                    } else if (counter >= 1000){
-                        clearInterval(handle);
-                        throw Error('lock timeout');
-                    }
-                });
-            }, 10);
-        },
         function get_keys(callback) {
             client.keys('clay:*', callback);
         },
@@ -71,8 +57,29 @@ function clear_redis(callback) {
     ], callback);
 }
 
+function create_a_lot_of_records (done){
+    clear_redis(function(){
+        async.map(_.range(1000), function(index, callback){
+            var num = (index + 1);
+            BuildInstruction.create({
+                name: 'Lorem Ipsum project #' + num,
+                repository_address: 'git@github.com:lorem/ipsum-'+num+'-sit-amet.git',
+                build_command: 'make test:unit:' + num
+            }, callback);
+        }, done);
+    });
+}
 describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage backend', function(){
-    beforeEach(clear_redis);
+    beforeEach(function(done){
+        clear_redis(function(){
+            Build.create({
+                status: 0,
+                error: 'none',
+                output: 'I am new, buddy!'
+            }, done);
+        });
+    });
+
     describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
 
         it('should increment the index', function(done){
@@ -92,15 +99,15 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     pks.should.be.ok;
                     pks.should.be.an.instanceof(Array);
                     pks.should.have.length(1);
-                    pks[0].should.equal('clay:User:id:1');
+                    pks.first.should.equal('clay:User:id:1');
 
                     instances.should.be.ok;
                     instances.should.be.an.instanceof(Array);
                     instances.should.have.length(1);
-                    instances[0].should.have.property('__id__', 1);
-                    instances[0].should.have.property('name', 'Zach Smith');
-                    instances[0].should.have.property('email', 'zach@yipit.com');
-                    instances[0].should.have.property('password', '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06');
+                    instances.first.should.have.property('__id__', 1);
+                    instances.first.should.have.property('name', 'Zach Smith');
+                    instances.first.should.have.property('email', 'zach@yipit.com');
+                    instances.first.should.have.property('password', '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06');
 
                     connection.hgetall("clay:User:id:1", callback);
                 },
@@ -188,20 +195,59 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
         });
     });
 });
+describe('Given a lot of models are created '+'(1000+)'.green.bold, function(){
+    beforeEach(create_a_lot_of_records);
+
+    it('the counter should match', function(done){
+        client.get('clay:BuildInstruction:count', function(with_problems, total){
+            if (with_problems) return done(with_problems);
+
+            total.should.be.ok;
+            total.should.equal('1000');
+
+            done();
+        })
+    });
+    it('all of them should be there', function(done){
+        client.keys('clay:BuildInstruction:id:*', function(with_problems, items){
+            if (with_problems) return done(with_problems);
+
+            items.should.be.an.instanceof(Array);
+            items.should.have.length(1000);
+            done();
+        })
+    });
+});
 
 describe('Instance lookup', function(){
     beforeEach(function(done){
         clear_redis(function(){
-            Build.create({
-
-                status: 0,
-                error: 'none',
-                output: 'I am new, buddy!'
+            async.mapSeries(_.range(100), function(index, callback){
+                var num = (index + 1);
+                BuildInstruction.create({
+                    name: 'Lorem Ipsum project #' + num,
+                    repository_address: 'git@github.com:lorem/ipsum-'+num+'-sit-amet.git',
+                    build_command: 'make test:unit:' + num
+                }, callback);
             }, done);
         });
     });
     describe('calling Model#find_by_field_name("value")'.yellow.bold, function() {
-        it('returns many results');
+        it('does not fail', function(done){
+            BuildInstruction.find_by_name(/project.*1/, done);
+        });
+
+        it('returns results ordered by id descending', function(done){
+            BuildInstruction.find_by_name(/project.*1/, function(err, found){
+                found.should.be.ok;
+                found.should.have.length(20);
+
+                found.first.should.have.property('name', 'Lorem Ipsum project #100');
+                found.last.should.have.property('name', 'Lorem Ipsum project #1');
+
+                done();
+            });
+        });
         it('returns up to 100 results by default');
     });
     describe('calling Model#get_by_field_name("value")'.yellow.bold, function() {
@@ -215,21 +261,20 @@ describe('Instance lookup', function(){
     });
 });
 
-describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
-    beforeEach(function(done){
-        clear_redis(function(){
-            Build.create({
-
-                status: 0,
-                error: 'none',
-                output: 'I am new, buddy!'
-            }, done);
-        });
-    });
-    describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
-        it('should keep the index');
-    });
-    describe('through '+'instance.save(callback)'.yellow.bold, function() {
-        it('should increment the index');
-    });
-});
+// describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
+//     beforeEach(function(done){
+//         clear_redis(function(){
+//             Build.create({
+//                 status: 0,
+//                 error: 'none',
+//                 output: 'I am new, buddy!'
+//             }, done);
+//         });
+//     });
+//     describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
+//         it('should keep the index');
+//     });
+//     describe('through '+'instance.save(callback)'.yellow.bold, function() {
+//         it('should increment the index');
+//     });
+// });
