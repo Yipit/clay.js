@@ -283,12 +283,12 @@ describe('Instance lookup', function(){
             });
         });
 
-        it('returns null when not found', function(done){
-            BuildInstruction.find_by_id(999, function(with_problems, item){
-                if (with_problems) return done(with_problems);
+        it('returns an error when not found', function(done){
+            BuildInstruction.find_by_id(999, function(error, item){
+                should.exist(error);
 
                 should.not.exist(item);
-                done();
+                done(null);
             });
         });
 
@@ -311,15 +311,13 @@ describe('Instance lookup', function(){
             });
         });
 
-        it('returns null when not found', function(done){
-            BuildInstruction.get_by_id(999, function(with_problems, item){
-                if (with_problems) return done(with_problems);
-
+        it('returns an error when not found', function(done){
+            BuildInstruction.get_by_id(999, function(error, item){
+                error.should.have.property('message', 'could not find a BuildInstruction with the id 999');
                 should.not.exist(item);
                 done();
             });
         });
-
     });
 
     describe('calling Model#ordered_by.one_field.find_by_field_name'.yellow.bold, function() {
@@ -331,17 +329,17 @@ describe('Instance lookup', function(){
 });
 
 describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
-    before(function(done){
+    beforeEach(function(done){
         clear_redis(function(){
             async.waterfall([
-                function(callback){
+                function create_a_build_without_id(callback){
                     Build.create({
                         status: 33,
                         error: 'a lot of problems, dude',
                         output: 'damn'
                     }, callback);
                 },
-                function (pk, instance, storage, connection, callback){
+                function create_the_same_build_10_times (pk, instance, storage, connection, callback){
                     async.mapSeries(_.range(10), function(index, callback){
                         Build.create({
                             __id__: 568,
@@ -352,7 +350,7 @@ describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage
                     }, callback);
 
                 },
-                function(results, callback){
+                function create_a_third_one_but_again_without_id(results, callback){
                     Build.create({
                         status: 88,
                         error: 'a third one',
@@ -376,7 +374,33 @@ describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage
     });
 
     describe('issuing ' + 'Model#erase'.yellow.bold, function(){
-        it('should cause the models to be deleted from the database');
+        it('should not fail', function(done){
+            async.waterfall([
+                function find_one_by_id(callback){
+                    Build.get_by_id(568, callback);
+                },
+                function delete_it(build_568, callback){
+                    build_568.erase(callback);
+                }
+            ], done);
+        });
+        it('should be deleted from the database', function(done){
+            async.waterfall([
+                function find_one_by_id(callback){
+                    Build.get_by_id(568, callback);
+                },
+                function delete_it(build_568, callback){
+                    build_568.erase(callback);
+                },
+                function lookup_again(callback){
+                    Build.get_by_id(568, callback);
+                }
+            ], function(error){
+                error.should.have.property('message', 'could not find a Build with the id 568');
+                done();
+            });
+        });
+
     });
 });
 
