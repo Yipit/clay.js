@@ -1,6 +1,6 @@
 {
     "name": "clay"
-  , "version": "1.2.2"
+  , "version": "1.3"
   , "description": "A Node.js Active Record with a charming declaration and simple usage. Supports Redis as backend but can be easily extended"
   , "keywords": ["Active Record", "Redis", "database", "ORM", "model", "models", "persistence", "db"]
   , "homepage": "http://github.com/Yipit/clay.js"

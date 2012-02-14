@@ -1,7 +1,14 @@
 ![logo](http://gabrielfalcao.github.com/img/clay.png)
 
 # clay.js
-> version 1.2.1
+> version 1.3
+
+# DISCLAIMER
+
+clay is being rewritten and its relationship support is not working
+yet.
+
+With the most sincer apologies, [Gabe](http://github.com/gabrielfalcao)
 
 # What
 
