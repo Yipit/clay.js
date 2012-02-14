@@ -1,6 +1,5 @@
 var
-should = require('should')
-, async = require('async')
+  async = require('async')
 , client = require('redis').createClient();
 
 var models = require('clay');
@@ -90,12 +89,12 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     redis_storage.persist(zach, callback);
                 },
                 function When_I_fetch_the_equivalent_key_from_redis(pks, instances, storage, connection, callback) {
-                    should.exist(pks);
+                    pks.should.be.ok;
                     pks.should.be.an.instanceof(Array);
                     pks.should.have.length(1);
                     pks[0].should.equal('clay:User:id:1');
 
-                    should.exist(instances);
+                    instances.should.be.ok;
                     instances.should.be.an.instanceof(Array);
                     instances.should.have.length(1);
                     instances[0].should.have.property('__id__', 1);
@@ -131,10 +130,10 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     zach.save(callback);
                 },
                 function When_I_fetch_the_equivalent_key_from_redis(pk, instance, storage, connection, callback) {
-                    should.exist(pk);
+                    pk.should.be.ok;
                     pk.should.equal('clay:User:id:1');
 
-                    should.exist(instance);
+                    instance.should.be.ok;
                     instance.should.have.property('__id__', 1);
                     instance.should.have.property('name', 'Zach Smith');
                     instance.should.have.property('email', 'zach@yipit.com');
@@ -165,10 +164,10 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     }, callback);
                 },
                 function When_I_fetch_the_equivalent_key_from_redis(pk, instance, storage, connection, callback) {
-                    should.exist(pk);
+                    pk.should.be.ok;
                     pk.should.equal('clay:User:id:1');
 
-                    should.exist(instance);
+                    instance.should.be.ok;
                     instance.should.have.property('__id__', 1);
                     instance.should.have.property('name', 'Zach Smith');
                     instance.should.have.property('email', 'zach@yipit.com');
