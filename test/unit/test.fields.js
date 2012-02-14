@@ -24,7 +24,7 @@
    OTHER DEALINGS IN THE SOFTWARE. */
 
 var vows = require('vows')
-, should = require('should')
+, assert = require('assert')
 , crypto = require('crypto');
 
 var models = require('clay');
@@ -32,23 +32,23 @@ var models = require('clay');
 
 describe('Model field kinds', function(){
     describe('strings', function(){
-        it('should accept anything', function(){
-            should.equal(
+        it('accepts anything', function(){
+            assert.equal(
                 models.FieldKinds.string(null, null, 1234567),
                 "1234567"
             );
         });
     });
     describe('"auto" fields', function() {
-        it('should self-assign the current unit timestamp', function(){
-            should.equal(
+        it('self-assigns the current unit timestamp', function(){
+            assert.equal(
                 models.FieldKinds.auto(null, null, null),
                 (new Date()).getTime()
             );
         });
-        it('should ignore when a parameter is passed', function(){
-            should.doesNotThrow(function(){
-                should.equal(
+        it('ignores when a parameter is passed', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
                     models.FieldKinds.auto(null, null, "Tue, 22 Nov 2011 06:32:43 GMT"),
                     (new Date()).getTime()
                 );
@@ -56,93 +56,108 @@ describe('Model field kinds', function(){
         });
     });
 
-    // 'date takes a string and returns a date object': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.datetime(null, null, "Tue, 22 Nov 2011 06:32:43 GMT").toUTCString(),
-    //             "Tue, 22 Nov 2011 06:32:43 GMT"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'slug accepts string': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.slug(null, null, "Gabriel Falcão"),
-    //             "gabriel-falcao"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'alphanumeric accepts numbers': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.alphanumeric(null, null, "1234567"),
-    //             "1234567"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'alphanumeric accepts letters': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.alphanumeric(null, null, "abcDEF"),
-    //             "abcDEF"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'alphanumeric accepts letters and numbers': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.alphanumeric(null, null, "123abcDEF"),
-    //             "123abcDEF"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'alphanumeric does not accept symbols': function(kinds) {
-    //     should.throws(function(){
-    //         models.FieldKinds.alphanumeric(null, null, "@%^&*asda213"),
-    //         null
-    //     }, models.FieldValidationError);
+    describe('datetime', function() {
+        it('self-assigns the current unit timestamp', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.datetime(null, null, "Tue, 22 Nov 2011 06:32:43 GMT").toUTCString(),
+                    "Tue, 22 Nov 2011 06:32:43 GMT"
+                );
+            }, models.FieldValidationError);
+        });
+    });
 
-    //     should.throws(function(){
-    //         models.FieldKinds.alphanumeric(null, null, "@%ˆ&*asda213"),
-    //         null
-    //     }, /"[@][%][^][&][*][a][s][d][a][2][1][3]" is not a valid alphanumeric/);
-    // },
-    // 'email accepts a valid email': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         var processedEmail = models.FieldKinds.email(null, null, "gabriel@lettuce.it");
-    //         should.equal(
-    //             processedEmail,
-    //             "gabriel@lettuce.it"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'email complains on invalid email without "@"': function(kinds) {
-    //     should.throws(function(){
-    //         var processedEmail = models.FieldKinds.email(null, null, "gabriellettuce.it");
-    //     }, models.FieldValidationError);
-    // },
-    // 'email complains on invalid email without extension': function(kinds) {
-    //     should.throws(function(){
-    //         var processedEmail = models.FieldKinds.email(null, null, "gabriel@lettuce");
-    //     }, models.FieldValidationError);
-    // },
-    // 'numeric accepts numbers': function(kinds) {
-    //     should.doesNotThrow(function(){
-    //         should.equal(
-    //             models.FieldKinds.numeric(null, null, "1234567"),
-    //             "1234567"
-    //         );
-    //     }, models.FieldValidationError);
-    // },
-    // 'numeric accepts *ONLY* numbers': function(kinds) {
-    //     should.throws(function(){
-    //         models.FieldKinds.numeric(null, null, "asda213"),
-    //         null
-    //     }, models.FieldValidationError);
+    describe('slug', function() {
+        it('accepts string', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.slug(null, null, "Gabriel Falcão"),
+                    "gabriel-falcao"
+                );
+            }, models.FieldValidationError);
+        });
+    });
 
-    //     should.throws(function(){
-    //         models.FieldKinds.numeric(null, null, "asda213"),
-    //         null
-    //     }, /"[a][s][d][a][2][1][3]" is not a valid number/);
-    // }
+    describe('alphanumeric', function() {
+        it('accepts numbers', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.alphanumeric(null, null, "1234567"),
+                    "1234567"
+                );
+            }, models.FieldValidationError);
+        });
+        it('accepts letters', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.alphanumeric(null, null, "abcDEF"),
+                    "abcDEF"
+                );
+            }, models.FieldValidationError);
+        });
+        it('accepts letters and numbers', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.alphanumeric(null, null, "123abcDEF"),
+                    "123abcDEF"
+                );
+            }, models.FieldValidationError);
+        });
+        it('does not accept symbols', function(){
+            assert.throws(function(){
+                models.FieldKinds.alphanumeric(null, null, "@%^&*asda213"),
+                null
+            }, models.FieldValidationError);
+
+            assert.throws(function(){
+                models.FieldKinds.alphanumeric(null, null, "@%ˆ&*asda213"),
+                null
+            }, /"[@][%][^][&][*][a][s][d][a][2][1][3]" is not a valid alphanumeric/);
+        });
+    });
+
+    describe('email', function() {
+        it('accepts a valid email address', function(){
+            assert.doesNotThrow(function(){
+                var processedEmail = models.FieldKinds.email(null, null, "gabriel@lettuce.it");
+                assert.equal(
+                    processedEmail,
+                    "gabriel@lettuce.it"
+                );
+            }, models.FieldValidationError);
+
+        });
+        it('complains on an address without "@"', function(){
+            assert.throws(function(){
+                var processedEmail = models.FieldKinds.email(null, null, "gabriellettuce.it");
+            }, models.FieldValidationError);
+        });
+        it('complains on an address without "extension"', function(){
+            assert.throws(function(){
+                var processedEmail = models.FieldKinds.email(null, null, "gabriel@lettuce");
+            }, models.FieldValidationError);
+        });
+    });
+
+    describe('numeric', function() {
+        it('accepts numbers', function(){
+            assert.doesNotThrow(function(){
+                assert.equal(
+                    models.FieldKinds.numeric(null, null, "1234567"),
+                    "1234567"
+                );
+            }, models.FieldValidationError);
+        });
+        it('accepts ONLY numbers', function(){
+            assert.throws(function(){
+                models.FieldKinds.numeric(null, null, "asda213"),
+                null
+            }, models.FieldValidationError);
+
+            assert.throws(function(){
+                models.FieldKinds.numeric(null, null, "asda213"),
+                null
+            }, /"[a][s][d][a][2][1][3]" is not a valid number/);
+        });
+    });
 })
