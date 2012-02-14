@@ -189,10 +189,37 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
     });
 });
 
+describe('Instance lookup', function(){
+    beforeEach(function(done){
+        clear_redis(function(){
+            Build.create({
+
+                status: 0,
+                error: 'none',
+                output: 'I am new, buddy!'
+            }, done);
+        });
+    });
+    describe('calling Model#find_by_field_name("value")'.yellow.bold, function() {
+        it('returns many results');
+        it('returns up to 100 results by default');
+    });
+    describe('calling Model#get_by_field_name("value")'.yellow.bold, function() {
+        it('returns the first result');
+    });
+    describe('calling Model#ordered_by.one_field.find_by_field_name'.yellow.bold, function() {
+        it('returns the many results given the order by "one_field"');
+    });
+    describe('calling Model#ordered_by.one_field.get_by_field_name'.yellow.bold, function() {
+        it('returns the first result given the order by "one_field"');
+    });
+});
+
 describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
     beforeEach(function(done){
         clear_redis(function(){
             Build.create({
+
                 status: 0,
                 error: 'none',
                 output: 'I am new, buddy!'
