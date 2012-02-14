@@ -248,10 +248,21 @@ describe('Instance lookup', function(){
                 done();
             });
         });
-        it('returns up to 100 results by default');
     });
     describe('calling Model#get_by_field_name("value")'.yellow.bold, function() {
-        it('returns the first result');
+        it('does not fail', function(done){
+            BuildInstruction.get_by_build_command(/.*1/, done);
+        });
+
+        it('returns the first result', function(done){
+            BuildInstruction.get_by_build_command(/.*1/, function(with_problems, item){
+                if (with_problems) return done(with_problems);
+
+                item.should.be.an.instanceof(BuildInstruction);
+                item.should.have.property('name', 'Lorem Ipsum project #100');
+                done();
+            });
+        });
     });
     describe('calling Model#ordered_by.one_field.find_by_field_name'.yellow.bold, function() {
         it('returns the many results given the order by "one_field"');
@@ -261,20 +272,55 @@ describe('Instance lookup', function(){
     });
 });
 
-// describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
-//     beforeEach(function(done){
-//         clear_redis(function(){
-//             Build.create({
-//                 status: 0,
-//                 error: 'none',
-//                 output: 'I am new, buddy!'
-//             }, done);
-//         });
-//     });
-//     describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
-//         it('should keep the index');
-//     });
-//     describe('through '+'instance.save(callback)'.yellow.bold, function() {
-//         it('should increment the index');
-//     });
-// });
+describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage backend', function(){
+    before(function(done){
+        clear_redis(function(){
+            async.waterfall([
+                function(callback){
+                    Build.create({
+                        status: 33,
+                        error: 'a lot of problems, dude',
+                        output: 'damn'
+                    }, callback);
+                },
+                function (pk, instance, storage, connection, callback){
+                    async.mapSeries(_.range(10), function(index, callback){
+                        Build.create({
+                            __id__: 568,
+                            status: 0,
+                            error: 'none',
+                            output: 'I am new, buddy!'
+                        }, callback);
+                    }, callback);
+
+                },
+                function(results, callback){
+                    Build.create({
+                        status: 88,
+                        error: 'a third one',
+                        output: 'yep'
+                    }, function(pk, instance, storage, connection){
+                        return callback();
+                    });
+                }
+            ], done);
+        });
+    });
+    it('the counter should match', function(done){
+        client.get('clay:Build:count', function(with_problems, total){
+            if (with_problems) return done(with_problems);
+
+            total.should.be.ok;
+            total.should.equal('578');
+
+            done();
+        })
+    });
+
+    describe('through '+'store.persist(instance, callback)'.yellow.bold, function() {
+        it('should keep the index');
+    });
+    describe('through '+'instance.save(callback)'.yellow.bold, function() {
+        it('should increment the index');
+    });
+});
