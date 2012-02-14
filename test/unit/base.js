@@ -25,7 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE. */
 var vows = require('vows')
 , should = require('should');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 
 vows.describe('Monkey-patches/Additions to the native prototypes').addBatch({
     'String.slugify': function() {
