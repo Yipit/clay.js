@@ -404,3 +404,20 @@ describe('Persisting '+'an existing'.yellow.bold+' instance to the redis storage
     });
 });
 
+describe('Persisting many Builds for a BuildInstruction', function(){
+    describe('after saving a many2one', function(){
+        it('should be possible to recover through build.instruction');
+    });
+    describe('after saving a one2many', function(){
+        it('should be possible to recover through instruction.builds.find_by_name(/pattern/)');
+    });
+    describe('after saving a one2many', function(){
+        it('should be possible to recover through instruction.builds.get_by_name(/pattern/)');
+    });
+    describe('after saving a one2many', function(){
+        it('should be possible to recover through instruction.builds.find_by_id(/pattern/)');
+    });
+    describe('after saving a one2many', function(){
+        it('should be possible to recover through instruction.builds.get_by_id(/pattern/)');
+    });
+});
