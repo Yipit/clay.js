@@ -59,7 +59,7 @@ models.set_primary_storage(mock);
 var User = models.declare("User", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("email", kind.email);
-    it.has.field("password", kind.hashOf(["name", "email"]));
+    it.has.field("password", kind.string);
 
     it.has.method('greet', function() {
         return [

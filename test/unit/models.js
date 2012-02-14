@@ -42,7 +42,7 @@ vows.describe('A Model').addBatch({
                 it.has.field("birthdate", kind.datetime);
                 it.has.field("created_at", kind.auto);
                 it.has.field("zipcode", kind.numeric);
-                it.has.field("password", kind.hashOf(["username", "email_address"]));
+                it.has.field("password", kind.string);
 
                 it.validates.uniquenessOf("username");
 

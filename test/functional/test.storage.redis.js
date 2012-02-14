@@ -10,7 +10,7 @@ var redis_storage = new models.storage.RedisMechanism(client);
 var User = models.declare("User", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("email", kind.email);
-    it.has.field("password", kind.hashOf(["name", "email"]));
+    it.has.field("password", kind.string);
 
     it.has.method('greet', function() {
         return [
@@ -108,7 +108,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     instances.first.should.have.property('__id__', 1);
                     instances.first.should.have.property('name', 'Zach Smith');
                     instances.first.should.have.property('email', 'zach@yipit.com');
-                    instances.first.should.have.property('password', '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06');
+                    instances.first.should.have.property('password', 'cheezNwine');
 
                     connection.hgetall("clay:User:id:1", callback);
                 },
@@ -117,7 +117,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                         __id__: '1',
                         name: 'Zach Smith',
                         email: 'zach@yipit.com',
-                        password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
+                        password: 'cheezNwine'
                     });
                     callback();
                 }
@@ -145,7 +145,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     instance.should.have.property('__id__', 1);
                     instance.should.have.property('name', 'Zach Smith');
                     instance.should.have.property('email', 'zach@yipit.com');
-                    instance.should.have.property('password', '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06');
+                    instance.should.have.property('password', 'cheezNwine');
 
                     connection.hgetall("clay:User:id:1", callback);
                 },
@@ -154,7 +154,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                         __id__: '1',
                         name: 'Zach Smith',
                         email: 'zach@yipit.com',
-                        password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
+                        password: 'cheezNwine'
                     });
                     callback();
                 }
@@ -179,7 +179,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                     instance.should.have.property('__id__', 1);
                     instance.should.have.property('name', 'Zach Smith');
                     instance.should.have.property('email', 'zach@yipit.com');
-                    instance.should.have.property('password', '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06');
+                    instance.should.have.property('password', 'cheezNwine');
 
                     connection.hgetall("clay:User:id:1", callback);
                 },
@@ -188,7 +188,7 @@ describe('Persisting '+'fresh'.yellow.bold+' instances to the redis storage back
                         __id__: '1',
                         name: 'Zach Smith',
                         email: 'zach@yipit.com',
-                        password: '8e5a04ac30cf92eafe36e7a6f9ae9e3af240dc06'
+                        password: 'cheezNwine'
                     });
                     callback();
                 }

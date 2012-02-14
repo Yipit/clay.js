@@ -40,7 +40,7 @@ var models = require('clay');
 var User = models.declare("User", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("email", kind.email);
-    it.has.field("password", kind.hashOf(["name", "email"]));
+    it.has.field("password", kind.string);
     it.has.method('greet', function() {
         return [
             "Hello, my name is ", this.name, ", it's nice to meet you"
@@ -174,39 +174,6 @@ var Foo = models.declare('Foo', function(it, kind){
     it.has.field('example', kind.slug);
 });
 ```
-
-### hashOf
-
-Now this is cool :)
-
-Let's say you want to have a password kind of field.
-
-One of the ways to implement such thing is by concatenating with other
-field value(s) and then hashed with md5 or sha1, right?
-
-That is what the field kind `hashOf` does for you. Just declare on it
-which fields must be ued in the concatenation, that will be done
-automatically for you.
-
-You can take a look
-[on its unit tests](https://github.com/Yipit/clay.js/blob/master/test/unit/fields.js#L127)
-to see how it works precisely, but here is an example:
-
-```javascript
-var u1 = new User({
-    name: "John Doe",
-    email: "example@email.com",
-    password: '123'
-});
-
-assert.equal(u1.password, "f8543ecd4084527d7bc443f272a38c6390bbb7d6")
-```
-
-the password was already converted from `123` to
-`f8543ecd4084527d7bc443f272a38c6390bbb7d6`, which is the `sha1` sum of
-the string:
-
-`John Doe|sha1-clay|example@email.com|sha1-clay|123`
 
 ## saving instances
 
