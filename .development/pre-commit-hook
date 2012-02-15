@@ -1,10 +1,10 @@
 #!/bin/bash
-all_kinds=(client server terminal)
+all_kinds=(lib test)
 echo "Let's just run JSHint and make sure that no bad code is being commited :P"
 echo
 for kind in "${all_kinds[@]l}"; do
     printf "  * Looking for errors on the $kind..."
-    find `pwd`/app/$kind -name '*.js' | xargs jshint 2>&1>/dev/null
+    find `pwd`/$kind -name '*.js' | xargs jshint 2>&1>/dev/null
     if [ "$?" == "0" ]; then
         printf '\033[1;32m \xe2\x9c\x94\n\033[0m'; # passed
     else
@@ -13,7 +13,7 @@ for kind in "${all_kinds[@]l}"; do
         echo "OUTPUT BELOW"
         echo "==========================================================="
         echo
-        find `pwd`/app/$kind -name '*.js' | xargs jshint # I know it is stupid
+        find `pwd`/$kind -name '*.js' | xargs jshint # I know it is stupid
                                                 # to run again, but it
                                                 # happens that I wanna
                                                 # show the pretty
