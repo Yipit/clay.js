@@ -23,16 +23,14 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
-var vows = require('vows')
-, assert = require('assert')
-, util = require('util')
+var util = require('util')
 , _ = require('underscore')._
 , crypto = require('crypto');
 
 var models = require('clay');
 
-vows.describe('Models *"talking"* to a store').addBatch({
-    'when you declare a model, it is possible to specify its store': function(){
+describe('Storage mechanisms', function(){
+    it('supports specifying a storage mechanism when you declaring a model', function(){
         function FakeMechanism (){models.storage.Mechanism.call(this)};
         util.inherits(FakeMechanism, models.storage.Mechanism);
 
@@ -43,9 +41,9 @@ vows.describe('Models *"talking"* to a store').addBatch({
             it.is_stored_with(fake_mechanism)
         });
 
-        assert.deepEqual(fake_mechanism, User._meta.storage);
-    },
-    'it is possible to set the default storage mechanism': function(){
+        User._meta.storage.should.equal(fake_mechanism);
+    });
+    it('is possible to set the default/global storage mechanism', function(){
         function FakeMechanismTwo (){models.storage.Mechanism.call(this)};
         util.inherits(FakeMechanismTwo, models.storage.Mechanism);
 
@@ -56,11 +54,9 @@ vows.describe('Models *"talking"* to a store').addBatch({
         var Build = models.declare('Build', function (it, kind){
             it.has.field("name", kind.string);
         });
-
-        assert.deepEqual(fake2, Build._meta.storage);
-    },
-    'it defaults to the redis storage mechanism': function(){
-        assert.instanceOf(models.storage.default,
-                          models.storage.RedisMechanism);
-    }
-}).export(module);
+        Build._meta.storage.should.equal(fake2, Build._meta.storage);
+    });
+    it('defaults to the redis storage mechanism', function(){
+        models.storage.default.should.be.an.instanceof(models.storage.RedisMechanism);
+    });
+});
