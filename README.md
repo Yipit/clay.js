@@ -453,7 +453,7 @@ npm install
 ## 4. install [Jake](https://github.com/mde/jake):
 
 ```bash
-npm install -g jake
+npm install -g jshint
 ```
 
 ## 5. run the tests
@@ -465,7 +465,17 @@ jake functional
 
 **PS.:** *you need to have redis running in order to make the functional tests running*
 
-## 6. send the pull request
+## 6. set up the pre-commit hook:
+
+```console
+cd path/to/emerald
+```
+```console
+ln -s .development/pre-commit-hook .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+## 7. send the pull request
 
 # License
 

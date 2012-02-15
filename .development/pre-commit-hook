@@ -1,0 +1,30 @@
+#!/bin/bash
+all_kinds=(client server terminal)
+echo "Let's just run JSHint and make sure that no bad code is being commited :P"
+echo
+for kind in "${all_kinds[@]l}"; do
+    printf "  * Looking for errors on the $kind..."
+    find `pwd`/app/$kind -name '*.js' | xargs jshint 2>&1>/dev/null
+    if [ "$?" == "0" ]; then
+        printf '\033[1;32m \xe2\x9c\x94\n\033[0m'; # passed
+    else
+        printf '\033[1;31m \xe2\x9c\x98\n\033[0m'; # failed
+        echo
+        echo "OUTPUT BELOW"
+        echo "==========================================================="
+        echo
+        find `pwd`/app/$kind -name '*.js' | xargs jshint # I know it is stupid
+                                                # to run again, but it
+                                                # happens that I wanna
+                                                # show the pretty
+                                                # unicode chars before
+                                                # that
+        exit 1
+    fi;
+
+done;
+echo
+echo "-------"
+printf "\033[1;37mAlright, it's looking pretty good.\033[0;31m\xe2\x9d\xa4\033[0m\n"
+echo
+echo
