@@ -408,16 +408,38 @@ describe('Persisting many Builds for a BuildInstruction', function(){
     describe('after saving a many2one', function(){
         it('should be possible to recover through build.instruction');
     });
-    describe('after saving a one2many', function(){
+    describe('after saving an one2many', function(){
         it('should be possible to recover through instruction.builds.find_by_name(/pattern/)');
     });
-    describe('after saving a one2many', function(){
+    describe('after saving an one2many', function(){
         it('should be possible to recover through instruction.builds.get_by_name(/pattern/)');
     });
-    describe('after saving a one2many', function(){
+    describe('after saving an one2many', function(){
         it('should be possible to recover through instruction.builds.find_by_id(/pattern/)');
     });
-    describe('after saving a one2many', function(){
+    describe('after saving an one2many', function(){
         it('should be possible to recover through instruction.builds.get_by_id(/pattern/)');
     });
+
+    describe('after deleting an one2many', function(){
+        describe('when validating presence', function(){
+            it('also cascades deleting the related instances');
+        });
+        describe('when not validating presence', function(){
+            it('should not cascade the deletion for the related instances');
+        });
+
+    });
+
+
+});
+
+describe('Validations and triggers', function(){
+    it('RedisMechanism#is_valid(model_instance, callback) validates uniqueness on saving');
+    it('Model#is_valid(callback) validates ' + 'uniqueness'.yellow.bold + ' on saving');
+    it('Model#is_valid(callback) validates ' + 'presence'.yellow.bold + ' on saving');
+    describe('custom validators', function(){
+        it('#it.validates.with(callback) where the callback gets the model instance + another callback which should be called with a error');
+    });
+    it('Model#on("save") is triggered after validated');
 });
