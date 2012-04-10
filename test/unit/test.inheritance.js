@@ -39,13 +39,14 @@ describe('Model Inheritance', function(){
             it.has.index("name");
 
             it.has.method('joinWithDash', function(what){
-                return [this.name, what].join('-')
+                return [this.name, what].join('-');
             });
 
             it.has.class_method('dash', function(){
                 return '----dash----';
             });
-        })
+        });
+
         describe('and subclassed adding a new field', function() {
             var Circle = Shape.subclass("Circle", function(it, kind){
                 it.has.field("diameter", kind.numeric);
