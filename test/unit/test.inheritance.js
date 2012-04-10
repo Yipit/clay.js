@@ -26,7 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE. */
 var assert = require('assert')
 , crypto = require('crypto');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 var mock = new models.storage.Mechanism();
 
 models.set_primary_storage(mock);

@@ -27,7 +27,7 @@ var util = require('util')
 , _ = require('underscore')._
 , crypto = require('crypto');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 
 describe('Storage mechanisms', function(){
     it('supports specifying a storage mechanism when you declaring a model', function(){

@@ -4,7 +4,7 @@ _        = require('underscore')._
 , should  = require('should')
 , client = require('redis').createClient();
 
-var models = require('clay');
+var models = require('../../lib/clay');
 var redis_storage = new models.storage.RedisMechanism(client);
 
 var User = models.declare("User", function(it, kind){

@@ -29,7 +29,7 @@ var vows = require('vows')
 , crypto = require('crypto');
 _old_include = should.include;
 
-var models = require('clay');
+var models = require('../../clay');
 
 should.include = function (where, what, msg){
     var found = false;

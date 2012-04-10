@@ -25,7 +25,7 @@
 var vows = require('vows')
 , should = require('should');
 
-var models = require('clay');
+var models = require('../../lib/clay');
 
 describe('Monkey-patches/Additions to the native prototypes', function(){
     describe('String extensions', function(){
