@@ -67,6 +67,31 @@ describe('by declaring new a model', function(){
         });
     });
 
+    it('has the declared name accessible', function () {
+        Person.__name__.should.equal('Person');
+    });
+
+    it('also provides access to the model name from instances', function () {
+        var me = new Person({
+            username: 'lincoln',
+            email_address: 'lincoln@comum.org'
+        });
+        me.__model__.__name__.should.equal('Person');
+    });
+
+    it('also provides access to the name in instances', function () {
+        var Programmer = Person.subclass("Programmer", function (it, kind) {
+            it.has.field("favlang", kind.string);
+            it.has.method("getblah", function () {
+                return this.__model__.__name__;
+            });
+        });
+        var me = new Programmer({
+            favlang: 'python'
+        });
+        me.getblah().should.equal('Programmer');
+    });
+
     it('the indexes are place', function() {
         should.deepEqual(
             Person._meta.indexes,
