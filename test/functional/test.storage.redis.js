@@ -201,13 +201,16 @@ describe('Given a lot of models are created '+'(100+)'.green.bold, function(){
 
     it('the counter should match', function(done){
         client.get('clay:BuildInstruction:count', function(with_problems, total){
-            if (with_problems) return done(with_problems);
+            if (with_problems) {
+                done(with_problems);
+                return;
+            }
 
             total.should.be.ok;
             total.should.equal('100');
 
             done();
-        })
+        });
     });
     it('all of them should be there', function(done){
         client.keys('clay:BuildInstruction:id:*', function(with_problems, items){
