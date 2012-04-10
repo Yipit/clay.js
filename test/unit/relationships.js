@@ -23,10 +23,11 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
-var vows = require('vows')
-, should = require('should')
-, _ = require('underscore')._
-, crypto = require('crypto');
+var vows = require('vows'),
+    should = require('should'),
+    _ = require('underscore')._,
+    crypto = require('crypto');
+
 _old_include = should.include;
 
 var models = require('../../clay');
@@ -50,7 +51,7 @@ should.include = function (where, what, msg){
     } else {
         _old_include(where, what, msg);
     }
-}
+};
 
 var mock = new models.storage.Mechanism();
 
@@ -62,9 +63,7 @@ var User = models.declare("User", function(it, kind){
     it.has.field("password", kind.string);
 
     it.has.method('greet', function() {
-        return [
-            "Hello, my name is ", this.name, ", it's nice to meet you"
-        ].join('');
+        return [ "Hello, my name is ", this.name, ", it's nice to meet you" ].join('');
     });
 });
 
@@ -73,6 +72,7 @@ var Build = models.declare("Build", function(it, kind){
     it.has.field("error", kind.string);
     it.has.field("output", kind.string);
 });
+
 var BuildInstruction = models.declare("BuildInstruction", function(it, kind){
     it.has.field("name", kind.string);
     it.has.field("repository_address", kind.string);
@@ -105,7 +105,7 @@ vows.describe('Relationships').addBatch({
                 model: User,
                 reverse_name: 'created_instructions'
             }
-        )
+        );
     },
     '*one to many* is defined in the referred *(side efffected)*model': function(){
         should.include(
@@ -115,7 +115,7 @@ vows.describe('Relationships').addBatch({
                 model: BuildInstruction,
                 reverse_name: 'owner'
             }
-        )
+        );
     },
     '*many to one* is defined in the declared model': function(){
         should.include(
@@ -125,7 +125,7 @@ vows.describe('Relationships').addBatch({
                 model: User,
                 reverse_name: 'created_instructions'
             }
-        )
+        );
     },
     '*many to one* is defined in the referred *(side efffected)*model': function(){
         should.include(
@@ -135,17 +135,7 @@ vows.describe('Relationships').addBatch({
                 model: BuildInstruction,
                 reverse_name: 'owner'
             }
-        )
-    },
-    '*many to one* is defined in the referred *(side efffected)*model': function(){
-        should.include(
-            User._meta.relationships.has_many,
-            {
-                property: 'created_instructions',
-                model: BuildInstruction,
-                reverse_name: 'owner'
-            }
-        )
+        );
     },
     '*has one* creates a clever property that sets from an object to a model': {
         topic: function(){
@@ -189,7 +179,7 @@ vows.describe('Relationships').addBatch({
             ]
         });
 
-        b.should.have.property('builds').with.lengthOf(2)
+        b.should.have.property('builds').with.lengthOf(2);
 
         should.exist(b.builds[0]);
         should.exist(b.builds[1]);
@@ -255,8 +245,8 @@ vows.describe('Relationships').addBatch({
         i1.owner.name.should.equal('John Doe');
         i2.owner.name.should.equal('John Doe');
 
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i2.__id__);
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i1.__id__);
+        _.map(i1.owner.items, function(i){ return i.__data__.__id__; }).should.include(i2.__id__);
+        _.map(i1.owner.items, function(i){ return i.__data__.__id__; }).should.include(i1.__id__);
     },
     '*many-to-one* self-assignment to the affected instance': function(){
         var Item = models.declare('Item', function(it, kind){
@@ -307,7 +297,7 @@ vows.describe('Relationships').addBatch({
         i1.owner.name.should.equal('John Doe');
         i2.owner.name.should.equal('John Doe');
 
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i2.__id__);
-        _.map(i1.owner.items, function(i){return i.__data__.__id__}).should.include(i1.__id__);
+        _.map(i1.owner.items, function(i){ return i.__data__.__id__; }).should.include(i2.__id__);
+        _.map(i1.owner.items, function(i){ return i.__data__.__id__; }).should.include(i1.__id__);
     }
 }).export(module);

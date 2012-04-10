@@ -23,9 +23,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE. */
 
-var should = require('should')
-, crypto = require('crypto')
-, _ = require('underscore')._;
+var should = require('should'),
+    crypto = require('crypto'),
+    _ = require('underscore')._;
 
 var models = require('../../lib/clay');
 var mock = new models.storage.Mechanism();
@@ -33,14 +33,14 @@ var mock = new models.storage.Mechanism();
 models.set_primary_storage(mock);
 
 var Foo = models.declare("Foo", function(it, kind){
-    it.has.method('work', function(msg){
-        return "foooooooooooooooooo"
+    it.has.method('work', function(msg) {
+        return "foooooooooooooooooo";
     });
 });
 
 var Bar = models.declare("Bar", function(it, kind){
-    it.has.method('work', function(msg){
-        return "baaaaarrrrrrrrrrrrr"
+    it.has.method('work', function(msg) {
+        return "baaaaarrrrrrrrrrrrr";
     });
 });
 
@@ -56,7 +56,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.field('some field', kind.string);
             });
-        }
+        };
         should.throws(our_hope_away, models.FieldValidationError);
         try {
             our_hope_away();
@@ -69,7 +69,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.index('some field', kind.string);
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 
@@ -84,7 +84,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.method('some method', function(){});
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 
@@ -99,7 +99,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.class_method('some class method', function(){});
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 
@@ -114,7 +114,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.class_method('some class method', function(){});
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 
@@ -129,7 +129,7 @@ describe('Models', function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.one('some rel', function(){});
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 
@@ -138,13 +138,13 @@ describe('Models', function(){
         } catch (e) {
             e.message.should.equal('The declaration of the model "Wicked" specifies a relationship with a bad name: "some rel". In those cases use just numbers, letters and underscore');
         }
-    })
+    });
     it('complains when declared many to one relationships have bad names', function(){
         var our_hope_away = function(){
             var Wicked = models.declare("Wicked", function(it, kind){
                 it.has.many('some rel', function(){});
             });
-        }
+        };
 
         should.throws(our_hope_away, models.FieldValidationError);
 

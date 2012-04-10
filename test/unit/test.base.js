@@ -22,8 +22,8 @@
    WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE. */
-var vows = require('vows')
-, should = require('should');
+var vows = require('vows'),
+    should = require('should');
 
 var models = require('../../lib/clay');
 
@@ -34,10 +34,10 @@ describe('Monkey-patches/Additions to the native prototypes', function(){
         });
         it('String.methodify', function() {
             should.equal("Call Gabriel Falcão".methodify(), "call_gabriel_falcao");
-        })
+        });
         it('String.render', function() {
             should.equal("Gabriel {surname}".render({surname: 'Falcão'}), "Gabriel Falcão");
-        })
+        });
     });
     describe('Array extensions', function(){
         it('Array.prototype.first always return the first element', function() {

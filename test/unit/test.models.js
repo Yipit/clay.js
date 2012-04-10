@@ -23,9 +23,9 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
-var should = require('should')
-, crypto = require('crypto')
-, _ = require('underscore')._;
+var should = require('should'),
+    crypto = require('crypto'),
+    _ = require('underscore')._;
 
 var models = require('../../lib/clay');
 var mock = new models.storage.Mechanism();
@@ -129,7 +129,7 @@ describe('by declaring new a model', function(){
             email_address: 'gabriel@lettuce.it',
             zipcode: 10019,
             password: '123'
-        })
+        });
 
         var p = Person.from_json_string(raw);
         should.equal(p.username, 'gabrielfalcao');
@@ -143,7 +143,7 @@ describe('by declaring new a model', function(){
             email_address: 'gabriel@lettuce.it',
             zipcode: 10019,
             password: '123'
-        }))
+        }));
 
         var p = Person.from_json_buffer(buf);
         should.equal(p.username, 'gabrielfalcao');
@@ -174,7 +174,7 @@ describe('by declaring new a model', function(){
         should.equal(p2.password, '123');
     });
     describe('after creating an instance of it', function() {
-        var now = new Date()
+        var now = new Date();
         var gabrielfalcao = new Person({
             username: 'gabrielfalcao',
             email_address: 'gabriel@lettuce.it',
@@ -203,7 +203,7 @@ describe('by declaring new a model', function(){
             should.equal(gabrielfalcao.email_address, 'gabriel@lettuce.it');
         });
         it('instance methods', function() {
-            gabrielfalcao.username = 'ohhyeah'
+            gabrielfalcao.username = 'ohhyeah';
 
             should.equal(
                 gabrielfalcao.tweet('that is cool, bro'),
@@ -217,12 +217,12 @@ describe('by declaring new a model', function(){
             );
         });
         it('the date was parsed properly', function() {
-            gabrielfalcao.birthdate.should.be.an.instanceof(Date)
-            gabrielfalcao.birthdate.toFormat("DD/MM/YYYY").should.equal('25/02/1988')
+            gabrielfalcao.birthdate.should.be.an.instanceof(Date);
+            gabrielfalcao.birthdate.toFormat("DD/MM/YYYY").should.equal('25/02/1988');
         });
         it('the auto field worked', function() {
-            gabrielfalcao.created_at.should.be.an.instanceof(Date)
-            gabrielfalcao.created_at.toFormat("DD/MM/YYYY").should.equal(now.toFormat('DD/MM/YYYY'))
+            gabrielfalcao.created_at.should.be.an.instanceof(Date);
+            gabrielfalcao.created_at.toFormat("DD/MM/YYYY").should.equal(now.toFormat('DD/MM/YYYY'));
         });
         it("fails when creating an instance with invalid field values", function(done) {
             Person.create({

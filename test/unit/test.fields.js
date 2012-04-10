@@ -23,9 +23,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE. */
 
-var vows = require('vows')
-, assert = require('assert')
-, crypto = require('crypto');
+var vows = require('vows'),
+    assert = require('assert'),
+    crypto = require('crypto');
 
 var models = require('../../lib/clay');
 
@@ -104,14 +104,12 @@ describe('Model field kinds', function(){
             }, models.FieldValidationError);
         });
         it('does not accept symbols', function(){
-            assert.throws(function(){
-                models.FieldKinds.alphanumeric(null, null, "@%^&*asda213"),
-                null
+            assert.throws(function() {
+                models.FieldKinds.alphanumeric(null, null, "@%^&*asda213");
             }, models.FieldValidationError);
 
             assert.throws(function(){
-                models.FieldKinds.alphanumeric(null, null, "@%ˆ&*asda213"),
-                null
+                models.FieldKinds.alphanumeric(null, null, "@%ˆ&*asda213");
             }, /"[@][%][^][&][*][a][s][d][a][2][1][3]" is not a valid alphanumeric/);
         });
     });
@@ -150,14 +148,12 @@ describe('Model field kinds', function(){
         });
         it('accepts ONLY numbers', function(){
             assert.throws(function(){
-                models.FieldKinds.numeric(null, null, "asda213"),
-                null
+                models.FieldKinds.numeric(null, null, "asda213");
             }, models.FieldValidationError);
 
             assert.throws(function(){
-                models.FieldKinds.numeric(null, null, "asda213"),
-                null
+                models.FieldKinds.numeric(null, null, "asda213");
             }, /"[a][s][d][a][2][1][3]" is not a valid number/);
         });
     });
-})
+});

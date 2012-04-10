@@ -23,33 +23,33 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE. */
 
-var util = require('util')
-, _ = require('underscore')._
-, crypto = require('crypto');
+var util = require('util'),
+    _ = require('underscore')._,
+    crypto = require('crypto');
 
 var models = require('../../lib/clay');
 
 describe('Storage mechanisms', function(){
     it('supports specifying a storage mechanism when you declaring a model', function(){
-        function FakeMechanism (){models.storage.Mechanism.call(this)};
+        function FakeMechanism() { models.storage.Mechanism.call(this); }
         util.inherits(FakeMechanism, models.storage.Mechanism);
 
         var fake_mechanism = new FakeMechanism();
 
         var User = models.declare('User', function (it, kind){
             it.has.field("name", kind.string);
-            it.is_stored_with(fake_mechanism)
+            it.is_stored_with(fake_mechanism);
         });
 
         User._meta.storage.should.equal(fake_mechanism);
     });
     it('is possible to set the default/global storage mechanism', function(){
-        function FakeMechanismTwo (){models.storage.Mechanism.call(this)};
+        function FakeMechanismTwo(){ models.storage.Mechanism.call(this); }
         util.inherits(FakeMechanismTwo, models.storage.Mechanism);
 
         var fake2 = new FakeMechanismTwo();
 
-        models.set_primary_storage(fake2)
+        models.set_primary_storage(fake2);
 
         var Build = models.declare('Build', function (it, kind){
             it.has.field("name", kind.string);
