@@ -1,6 +1,6 @@
 all: init unit functional
 
-export MOCHA_CMD:=mocha -t 200 -b -u bdd -r should -r colors -R spec test/kind/test.*.js
+export MOCHA_CMD:=mocha -t 20000 -b -u bdd -r should -r colors -R spec test/kind/test.*.js
 
 init:
 	@echo "installing dependencies..."
