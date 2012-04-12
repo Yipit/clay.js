@@ -23,8 +23,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
    OTHER DEALINGS IN THE SOFTWARE. */
 
-var vows = require('vows'),
-    assert = require('assert'),
+var assert = require('assert'),
     crypto = require('crypto');
 
 var models = require('../../lib/clay');
