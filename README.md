@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/Yipit/clay.js.png)](http://travis-ci.org/Yipit/clay.js)
 ![logo](http://gabrielfalcao.github.com/img/clay.png)
 
 # clay.js
